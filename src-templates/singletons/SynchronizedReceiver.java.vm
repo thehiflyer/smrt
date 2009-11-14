@@ -1,0 +1,31 @@
+package ${myPackage};
+
+@@IMPORTS@@
+
+public class SynchronizedReceiver implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
+	private final #classRef($protocol) receiver;
+
+	public SynchronizedReceiver(#classRef($protocol) receiver) {
+		this.receiver = receiver;
+	}
+
+#macro(worker $p $chain)
+#foreach($method in $p.methods)
+#if($method.returnType.FullName == "void")
+	@Override
+	public synchronized #classRef(${method.returnType}) ${method.Name}(#parameterList($method)) {
+		receiver.${chain}${method.Name}($method.ParameterListWithoutTypes);
+	}
+#else
+#set($m = ${method.Name})
+	@Override
+	public #classRef(${method.returnType}) ${method.Name}(#parameterList($method)) {
+		return this;
+	}
+#worker($p.getSubProtocol(${method.returnType}) "${chain}${m}().")
+#end
+#end
+#end
+
+#worker($protocol "")
+}
