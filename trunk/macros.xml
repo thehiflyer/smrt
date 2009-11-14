@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Smrt" basedir="." default="all">
+
+	<dirname property="smrtDir" file="${ant.file}"/>
+
+	<property name="stubs.dir.default" value="${smrtDir}/build/stub" />
+	
+	<macrodef name="smrt-generate">
+		<attribute name="classpathref" />
+		<attribute name="src.dir" />
+		<attribute name="output.compiled.dir" />
+		<attribute name="output.source.dir" />
+		<attribute name="template.dir" />
+
+		<attribute name="stubs.dir" default="${stubs.dir.default}" />
+
+		<element name="javac-options" optional="true" />
+		
+		<sequential>
+			<delete dir="@{output.compiled.dir}" failonerror="false" />
+			<delete dir="@{output.source.dir}" failonerror="false" />
+			<mkdir dir="@{output.compiled.dir}"/>
+			<mkdir dir="@{output.source.dir}"/>
+			
+			<!-- First generate -->
+			<javac
+				destdir="@{output.compiled.dir}"
+				debug="true"
+				target="1.6"
+				source="1.6"
+				classpathref="@{classpathref}"
+				fork="yes"
+				>
+			
+					<compilerarg value="-Atemplatedir=@{template.dir}" />
+					<compilerarg value="-processor" />
+					<compilerarg value="se.smrt.generator.MessageCodeGenerator" />
+
+					<javac-options />
+				<src path="@{src.dir}" />
+			</javac>
+			<move todir="@{output.source.dir}">
+				<fileset dir="@{output.compiled.dir}">
+					<include name="**/*.java" />
+				</fileset>
+			</move>
+			<!-- Then compile generated code -->
+			<javac
+				destdir="@{output.compiled.dir}"
+				debug="true"
+				target="1.6"
+				source="1.6"
+				classpathref="@{classpathref}"
+				fork="yes"
+				>
+				<javac-options />
+				<classpath path="@{stubs.dir}" />
+				<src path="@{output.source.dir}" />
+			</javac>
+		</sequential>
+	</macrodef>
+</project>
+

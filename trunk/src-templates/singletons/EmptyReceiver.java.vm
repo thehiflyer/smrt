@@ -1,0 +1,18 @@
+package ${myPackage};
+
+@@IMPORTS@@
+
+public class EmptyReceiver implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
+	private static final EmptyReceiver instance = new EmptyReceiver();
+	public static EmptyReceiver getSingleton() {
+		return instance;
+	}
+	private final #classRef("java.util.Collection<$protocol.Type.FullNameWithGenerics>") receivers;
+
+#foreach($pm in $allsubprotocols)
+	@Override public #classRef($pm.Method.ReturnType) ${pm.Method.Name}() { return this; }
+#end
+#foreach($pm in $allmethods)
+	@Override public void ${pm.Method.Name}(#parameterList($pm.Method)) { }
+#end
+}

@@ -1,0 +1,36 @@
+package ${myPackage};
+
+@@IMPORTS@@
+
+public class AllMessagesToObject implements #classRef("${packageBase}.AllMessages") {
+	private final #classRef("java.util.Queue")<MessageObject> queue;
+
+	public AllMessagesToObject(#classRef("java.util.Queue")<MessageObject> queue) {
+		this.queue = queue;
+	}
+
+	public #classRef("${myPackage}.MessageObject") popMessage() {
+		if (queue.isEmpty()) {
+			return null;
+		}
+		return queue.remove();
+	}
+
+	private void add(#classRef("${myPackage}.MessageObject") message) {
+		queue.add(message);
+	}
+
+#foreach($interface in $bundle.Classes)
+#foreach($method in $interface.Methods)
+	@Override
+	public void ${method.Name}(#parameterList($method)) {
+		add(new #classRef("${myPackage}.MessageObject")() {
+			@Override
+			public void invoke(#classRef("${packageBase}.AllMessages") receiver) {
+				receiver.${method.Name}($method.ParameterListWithoutTypes);
+			}
+		});
+	}
+#end
+#end
+}

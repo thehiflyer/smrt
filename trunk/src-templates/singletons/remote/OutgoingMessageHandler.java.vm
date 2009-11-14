@@ -1,0 +1,39 @@
+package ${myPackage};
+
+@@IMPORTS@@
+
+public class OutgoingMessageHandler<T extends #classRef("java.io.OutputStream")> implements #classRef("${packageBase}.AllMessages") {
+	private final #classRef("${myPackage}.RequiredWriteCodec") codec;
+	private final T output;
+	private final #classRef("se.smrt.core.remote.ExceptionListener") errorHandler;
+
+	public OutgoingMessageHandler(#classRef("${myPackage}.RequiredWriteCodec") codec, T output, #classRef("se.smrt.core.remote.ExceptionListener") errorHandler) {
+		this.codec = codec;
+		this.output = output;
+		this.errorHandler = errorHandler;
+	}
+
+	public T getOutputStream() {
+		return output;
+	}
+
+#foreach($interface in $bundle.Classes)
+#foreach($method in $interface.Methods)
+	@Override
+	public void ${method.Name}(#parameterList($method)) {
+		try {
+			codec.writeInt(output, MessageId.${interface.Type.SimpleName.toUpperCase()}_${method.Name.toUpperCase()});
+
+
+#foreach($parameter in $method.Parameters)
+			codec.write#capitalize(${parameter.Type.DescriptionWithGenerics})(output, $parameter.Name);
+#end
+		} catch (#classRef("java.io.IOException") e) {
+			errorHandler.onException(e);
+		}
+	}
+
+#end
+#end
+}
+

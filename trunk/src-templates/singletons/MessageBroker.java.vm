@@ -1,0 +1,13 @@
+package ${myPackage};
+
+@@IMPORTS@@
+
+public class MessageBroker {
+	public static MessageBroker create() {
+		return new MessageBroker();
+	}
+
+	public #classRef($protocol) send(#classRef("java.lang.Iterable<$protocol.Type.FullNameWithGenerics>") receivers) {
+		return new MultiDispatcher(receivers);
+	}
+}

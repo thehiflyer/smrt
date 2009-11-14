@@ -1,0 +1,29 @@
+package ${myPackage};
+
+@@IMPORTS@@
+
+public class IncomingMessageHandler {
+	private final #classRef("${myPackage}.RequiredReadCodec") codec;
+
+	public IncomingMessageHandler(#classRef("${myPackage}.RequiredReadCodec") codec) {
+		this.codec = codec;
+	}
+
+	public void handleMessage(#classRef("java.io.InputStream") input, #classRef("${packageBase}.AllMessages") receiver) throws #classRef("java.io.IOException") {
+		int messageId = codec.readInt(input);
+		switch (messageId) {
+#foreach($interface in $bundle.Classes)
+#foreach($method in $interface.Methods)
+		case MessageId.${interface.Type.SimpleName.toUpperCase()}_${method.Name.toUpperCase()}: {
+#foreach($parameter in $method.Parameters)
+			#classRef($parameter.Type) $parameter.Name = codec.read#capitalize(${parameter.Type.DescriptionWithGenerics})(input);
+#end
+			receiver.${method.Name}($method.ParameterListWithoutTypes);
+		}
+		break;
+#end
+#end
+		}
+	}
+}
+

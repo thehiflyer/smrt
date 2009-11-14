@@ -1,0 +1,10 @@
+package ${myPackage};
+
+@@IMPORTS@@
+
+public interface RequiredWriteCodec extends #classRef("se.smrt.core.remote.DefaultWriteCodec") {
+#foreach($type in $types)
+	void write#capitalize($type.DescriptionWithGenerics)(#classRef("java.io.OutputStream") output, #classRef($type) #camelCase($type.DescriptionWithGenerics)) throws #classRef("java.io.IOException");
+
+#end
+}

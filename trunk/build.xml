@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Smrt" basedir="." default="all">
+
+	<dirname property="baseDir" file="${ant.file}"/>
+	
+	<path id="dependencies">
+	</path>
+
+
+	<path id="dependencies.generator">
+		<pathelement path="build/runtime"/>
+		<path refid="dependencies"/>
+	</path>
+	
+	<path id="dependencies.domain">
+		<pathelement path="build/runtime" />
+		<path refid="dependencies"/>
+	</path>
+	
+	<target name="all" depends="compile-domain, package" />
+	
+	<target name="clean" description="Removes old build files">
+		<delete dir="build" failonerror="false"/>
+	</target>
+	
+	<target name="test" depends="compile-domain">
+	</target>
+
+	<target name="package" depends="compile-runtime, compile-generator">
+		<jar destfile="build/smrt-generator.jar">
+			<fileset dir="build/generator"/>
+		</jar>
+		<jar destfile="build/smrt-runtime.jar">
+			<fileset dir="build/runtime"/>
+		</jar>
+	</target>
+	
+	<target name="compile-runtime">
+		<mkdir dir="build/runtime"/>
+		<javac
+			destdir="build/runtime"
+			debug="true"
+			target="1.6"
+			source="1.6"
+			classpathref="dependencies"
+			includeAntRuntime="no"
+			>
+			<src path="src-runtime">
+			</src>
+		</javac>
+	</target>
+
+	<target name="compile-generator" depends="compile-runtime">
+		<mkdir dir="build/generator"/>
+		<javac
+			destdir="build/generator"
+			debug="true"
+			target="1.6"
+			source="1.6"
+			classpathref="dependencies.generator"
+			includeAntRuntime="no"
+			>
+			<src path="src-generator">
+			</src>
+		</javac>
+	</target>
+
+	<target name="compile-stubs">
+		<mkdir dir="build/stub"/>
+		<javac
+			destdir="build/stub"
+			debug="true"
+			target="1.6"
+			source="1.6"
+			classpathref="dependencies.generator"
+			includeAntRuntime="no"
+			>
+			<src path="src-stub">
+			</src>
+		</javac>
+	</target>
+
+	<import file="macros.xml" />
+	
+	<target name="compile-domain" depends="compile-generator, compile-stubs">
+		
+		<smrt-generate
+			output.compiled.dir="${baseDir}/build/domain/classes"
+			output.source.dir="${baseDir}/build/domain/source"
+			src.dir="${baseDir}/src-example"
+			classpathref="dependencies.domain"
+			template.dir="${baseDir}/src-templates">
+
+			<javac-options>
+				<classpath path="${baseDir}/build/generator" />
+			</javac-options>		
+		</smrt-generate>
+		
+		<!--mkdir dir="build/domain"/>
+		<javac
+			destdir="build/domain"
+			debug="true"
+			target="1.6"
+			source="1.6"
+			classpathref="dependencies.domain"
+			fork="yes"
+			>
+			
+				<compilerarg value="-Atemplatedir=src-templates" />
+				<compilerarg value="-processor" />
+				<compilerarg value="se.smrt.generator.MessageCodeGenerator" />
+				<classpath path="build/generator" />
+				<classpath refid="dependencies.generator"/>
+				<classpath path="templates" />
+
+			<src path="src-example">
+			</src>
+		</javac-->
+	</target>
+
+</project>
+
+

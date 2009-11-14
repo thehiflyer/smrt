@@ -1,0 +1,28 @@
+package ${myPackage};
+
+@@IMPORTS@@
+
+public class MinaReceiver implements #classRef("${packageBase}.AllMessages") {
+	private final #classRef("${packageBase}.remote.OutgoingMessageHandler<java.io.ByteArrayOutputStream>") receiver;
+	private final #classRef("org.apache.mina.core.session.IoSession") ioSession;
+	private final #classRef("java.io.ByteArrayOutputStream") byteArrayOutputStream;
+
+	public MinaReceiver(#classRef("${packageBase}.remote.OutgoingMessageHandler<java.io.ByteArrayOutputStream>") receiver, #classRef("org.apache.mina.core.session.IoSession") ioSession) {
+		this.receiver = receiver;
+		this.ioSession = ioSession;
+		this.byteArrayOutputStream = receiver.getOutputStream();
+	}
+
+#foreach($interface in $bundle.Classes)
+#foreach($method in $interface.Methods)
+	@Override
+	public synchronized void ${method.Name}(#parameterList($method)) {
+		receiver.${method.Name}($method.ParameterListWithoutTypes);
+		ioSession.write(byteArrayOutputStream.toByteArray());
+		byteArrayOutputStream.reset();
+	}
+
+#end
+#end
+}
+
