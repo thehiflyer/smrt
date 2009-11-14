@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public interface DefaultWriteCodec {
-	void writeByte(OutputStream output, int value) throws IOException;
+	void writeByte(OutputStream output, byte value) throws IOException;
 
-	void writeShort(OutputStream output, int value) throws IOException;
+	void writeShort(OutputStream output, short value) throws IOException;
 
 	void writeInt(OutputStream output, int value) throws IOException;
 

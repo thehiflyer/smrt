@@ -16,6 +16,19 @@ public abstract class AbstractRequiredReadCodecImpl extends #classRef("se.smrt.c
 		return list;
 	}
 #end
+
+#if($type.isArray())#set($t = $type.ArrayComponent)
+	@Override
+	public #classRef($type) read#capitalize($type.DescriptionWithGenerics)(#classRef("java.io.InputStream") input) throws #classRef("java.io.IOException") {
+		int size = readInt(input);
+		#classRef($type) list = new #classRef($t)[size];
+		for (int i = 0; i < size; i++) {
+			list[i] = read#capitalize($t.SimpleName)(input);
+		}
+		return list;
+	}
+#end
+
 #if($type.FullName == "java.util.Map" && $type.GenericParameters.size() >= 2)#set($t1 = $type.GenericParameters.get(0))#set($t2 = $type.GenericParameters.get(1))
 	@Override
 	public #classRef($type) read#capitalize($type.DescriptionWithGenerics)(#classRef("java.io.InputStream") input) throws #classRef("java.io.IOException") {
@@ -24,9 +37,10 @@ public abstract class AbstractRequiredReadCodecImpl extends #classRef("se.smrt.c
 		for (int i = 0; i < size; i++) {
 			map.put(read#capitalize($t1.SimpleName)(input), read#capitalize($t2.SimpleName)(input));
 		}
-		return list;
+		return map;
 	}
 #end
+
 #if($type.FullName == "java.util.Collection" && $type.GenericParameters.size() > 0)#set($t = $type.GenericParameters.get(0))
 	@Override
 	public #classRef($type) read#capitalize($type.DescriptionWithGenerics)(#classRef("java.io.InputStream") input) throws #classRef("java.io.IOException") {
@@ -39,7 +53,8 @@ public abstract class AbstractRequiredReadCodecImpl extends #classRef("se.smrt.c
 	}
 #end
 #end
+
 	public <T> #classRef("java.util.Collection<T>") getDefaultCollection() {
-		return new ArrayList<T>();
+		return new #classRef("java.util.ArrayList<T>")();
 	}
 }

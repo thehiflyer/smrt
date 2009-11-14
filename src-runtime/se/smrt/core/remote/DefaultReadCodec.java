@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface DefaultReadCodec {
-	int readByte(InputStream input) throws IOException;
+	byte readByte(InputStream input) throws IOException;
+	int readUnsignedByte(InputStream input) throws IOException;
 
-	int readShort(InputStream input) throws IOException;
+	short readShort(InputStream input) throws IOException;
+	int readUnsignedShort(InputStream input) throws IOException;
 
 	int readInt(InputStream input) throws IOException;
 

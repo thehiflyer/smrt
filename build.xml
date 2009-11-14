@@ -4,16 +4,24 @@
 	<dirname property="baseDir" file="${ant.file}"/>
 	
 	<path id="dependencies">
+		<fileset dir="lib">
+			<include name="**/*.jar" />
+		</fileset>
 	</path>
 
 
+	<path id="dependencies.runtime">
+		<pathelement path="${baseDir}/build/stub"/>
+		<path refid="dependencies"/>
+	</path>
+	
 	<path id="dependencies.generator">
-		<pathelement path="build/runtime"/>
+		<pathelement path="${baseDir}/build/runtime"/>
 		<path refid="dependencies"/>
 	</path>
 	
 	<path id="dependencies.domain">
-		<pathelement path="build/runtime" />
+		<pathelement path="${baseDir}/build/runtime" />
 		<path refid="dependencies"/>
 	</path>
 	
@@ -35,16 +43,17 @@
 		</jar>
 	</target>
 	
-	<target name="compile-runtime">
-		<mkdir dir="build/runtime"/>
+	<target name="compile-runtime" depends="compile-stubs">
+		<mkdir dir="${baseDir}/build/runtime"/>
 		<javac
-			destdir="build/runtime"
+			destdir="${baseDir}/build/runtime"
 			debug="true"
 			target="1.6"
 			source="1.6"
-			classpathref="dependencies"
+			classpathref="dependencies.runtime"
 			includeAntRuntime="no"
 			>
+			<classpath path="${baseDir}/build/stub" />
 			<src path="src-runtime">
 			</src>
 		</javac>

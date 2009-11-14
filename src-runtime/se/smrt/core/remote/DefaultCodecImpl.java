@@ -4,23 +4,28 @@ import java.io.*;
 
 public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 	@Override
-	public void writeByte(OutputStream output, int value) throws IOException {
+	public void writeByte(OutputStream output, byte value) throws IOException {
 		output.write(value);
 	}
 
 	@Override
-	public int readByte(InputStream in) throws IOException {
-		return in.read();
+	public byte readByte(InputStream in) throws IOException {
+		return (byte) in.read();
 	}
 
 	@Override
-	public void writeShort(OutputStream out, int v) throws IOException {
+	public int readUnsignedByte(InputStream in) throws IOException {
+		return (256 + readByte(in)) & 255;
+	}
+
+	@Override
+	public void writeShort(OutputStream out, short v) throws IOException {
 		out.write((v >>> 8) & 0xFF);
 		out.write((v >>> 0) & 0xFF);
 	}
 
 	@Override
-	public int readShort(InputStream in) throws IOException {
+	public short readShort(InputStream in) throws IOException {
 		int ch1 = in.read();
 		int ch2 = in.read();
 		if ((ch1 | ch2) < 0) {
@@ -29,6 +34,11 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 		return (short) ((ch1 << 8) + (ch2 << 0));
 	}
 
+	@Override
+	public int readUnsignedShort(InputStream in) throws IOException {
+		return (1 << 16 + readShort(in)) & 0xFFFF;
+	}
+	
 	@Override
 	public void writeInt(OutputStream out, int v) throws IOException {
 		out.write((v >>> 24) & 0xFF);
@@ -90,7 +100,7 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 		int len = v.length();
 		writeInt(out, len);
 		for (int i = 0; i < len; i++) {
-			writeByte(out, v.charAt(i));
+			writeByte(out, (byte) v.charAt(i));
 		}
 	}
 
@@ -99,7 +109,7 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 		int len = readInt(in);
 		char[] chars = new char[len];
 		for (int i = 0; i < len; i++) {
-			chars[i] = (char) readByte(in);
+			chars[i] = (char) readUnsignedByte(in);
 		}
 		return new String(chars);
 	}
@@ -115,20 +125,20 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 			if (!((c >= 0x0001) && (c <= 0x007F))) {
 				break;
 			}
-			writeByte(output, c);
+			writeByte(output, (byte) c);
 		}
 
 		for (; i < len; i++) {
 			char c = str.charAt(i);
 			if ((c >= 0x0001) && (c <= 0x007F)) {
-				writeByte(output, c);
+				writeByte(output, (byte) c);
 			} else if (c > 0x07FF) {
-				writeByte(output, 0xE0 | ((c >> 12) & 0x0F));
-				writeByte(output, 0x80 | ((c >> 6) & 0x3F));
-				writeByte(output, 0x80 | ((c >> 0) & 0x3F));
+				writeByte(output, (byte) (0xE0 | ((c >> 12) & 0x0F)));
+				writeByte(output, (byte) (0x80 | ((c >> 6) & 0x3F)));
+				writeByte(output, (byte) (0x80 | ((c >> 0) & 0x3F)));
 			} else {
-				writeByte(output, 0xC0 | ((c >> 6) & 0x1F));
-				writeByte(output, 0x80 | ((c >> 0) & 0x3F));
+				writeByte(output, (byte) (0xC0 | ((c >> 6) & 0x1F)));
+				writeByte(output, (byte) (0x80 | ((c >> 0) & 0x3F)));
 			}
 		}
 	}
@@ -139,7 +149,7 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 		StringBuilder builder = new StringBuilder();
 
 		for (int i = 0; i < len; i++) {
-			int b = readByte(in);
+			int b = readUnsignedByte(in);
 			switch (b >> 4) {
 				case 0:
 				case 1:
@@ -155,13 +165,13 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 				case 12:
 				case 13:
 					/* 110x xxxx   10xx xxxx*/
-					int b2 = readByte(in);
+					int b2 = readUnsignedByte(in);
 					builder.append((char) (((b & 0x1F) << 6) | (b2 & 0x3F)));
 					break;
 				case 14:
 					/* 1110 xxxx  10xx xxxx  10xx xxxx */
-					b2 = readByte(in);
-					int b3 = readByte(in);
+					b2 = readUnsignedByte(in);
+					int b3 = readUnsignedByte(in);
 					builder.append((char) (((b & 0x0F) << 12) | ((b2 & 0x3F) << 6) | ((b3 & 0x3F) << 0)));
 					break;
 				default:
