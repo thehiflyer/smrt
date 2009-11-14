@@ -26,6 +26,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MessageCodeGenerator implements Processor {
+	private final BuiltinTypes builtinTypes = new BuiltinTypes();
+
 	private final Map<Type, ProtocolData> protocols = new HashMap<Type, ProtocolData>();
 	private Filer filer;
 	private File templateDir;
@@ -159,12 +161,11 @@ public class MessageCodeGenerator implements Processor {
 
 	private List<ProtocolMethod> getAllSubprotocols(ProtocolData protocolData, String chain, ArrayList<ProtocolMethod> protocolMethods) {
 		for (Method method : protocolData.getMethods()) {
-			ProtocolData subProtocol = protocols.get(method.getReturnType());
 			if (method.getReturnType().getFullName().equals("void")) {
 			} else {
-				System.out.println("Adding protol " + method);
+				ProtocolData subProtocol = protocols.get(method.getReturnType());
 				protocolMethods.add(new ProtocolMethod(chain, method, subProtocol));
-				getAllSubprotocols(subProtocol, chain + method.getName() + ".", protocolMethods);
+				getAllSubprotocols(subProtocol, chain + method.getName() + "().", protocolMethods);
 			}
 		}
 		 return protocolMethods;
@@ -176,11 +177,11 @@ public class MessageCodeGenerator implements Processor {
 
 	private List<ProtocolMethod> getAllMethods(ProtocolData protocolData, String chain, ArrayList<ProtocolMethod> protocolMethods) {
 		for (Method method : protocolData.getMethods()) {
-			ProtocolData subProtocol = protocols.get(method.getReturnType());
 			if (method.getReturnType().getFullName().equals("void")) {
-				protocolMethods.add(new ProtocolMethod(chain, method, subProtocol));
+				protocolMethods.add(new ProtocolMethod(chain, method, protocolData));
 			} else {
-				getAllMethods(subProtocol, chain + method.getName() + ".", protocolMethods);
+				ProtocolData subProtocol = protocols.get(method.getReturnType());
+				getAllMethods(subProtocol, chain + method.getName() + "().", protocolMethods);
 			}
 		}
 		 return protocolMethods;
@@ -274,8 +275,11 @@ public class MessageCodeGenerator implements Processor {
 
 	private void findType(Type type, Set<String> types) {
 		String packageName = type.getPackage();
-		if (!packageName.equals("java.lang") && !packageName.equals("")) {
+		if (!builtinTypes.isBuiltIn(type)) {
 			types.add(type.getFullNameWithGenerics());
+		}
+		if (type.isArray()) {
+			findType(type.getArrayComponent(), types);
 		}
 		for (Type type1 : type.getGenericParameters()) {
 			findType(type1, types);

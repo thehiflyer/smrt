@@ -3,5 +3,5 @@ package ${myPackage};
 @@IMPORTS@@
 
 public interface MessageObject {
-	void invoke(#classRef("${packageBase}.AllMessages") receiver);
+	void invoke(#classRef($protocol) receiver);
 }

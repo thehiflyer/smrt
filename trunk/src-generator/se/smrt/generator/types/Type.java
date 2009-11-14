@@ -128,7 +128,7 @@ public class Type implements Comparable {
 
 	public String getDescriptionWithGenerics() {
 		StringBuilder builder = new StringBuilder();
-		builder.append(getSimpleName());
+		builder.append(getSimpleDescription());
 		if (getGenericParameters().size() > 0) {
 			builder.append("Of");
 			boolean first = true;
@@ -142,6 +142,22 @@ public class Type implements Comparable {
 			}
 		}
 		return builder.toString();
+	}
+
+	public boolean isArray() {
+		return getSimpleName().endsWith("[]");
+	}
+
+	public Type getArrayComponent() {
+		if (isArray()) {
+			return new Type(name.substring(0, name.length() - 2));
+		}
+		return null;
+	}
+
+	private String getSimpleDescription() {
+		return getSimpleName().replace("[]", "Array");
+
 	}
 
 	public String getFullNameWithGenerics() {

@@ -2,10 +2,8 @@ package ${myPackage};
 
 public class MessageId {
 #set($idCount = 0)
-#foreach($interface in $bundle.Classes)
-#foreach($method in $interface.Methods)
-	public static final int ${interface.Type.SimpleName.toUpperCase()}_${method.Name.toUpperCase()} = $idCount;
+#foreach($pm in $allmethods)
+	public static final int ${pm.Protocol.Type.SimpleName.toUpperCase()}_${pm.Method.Name.toUpperCase()} = $idCount;
 #set($idCount = $idCount + 1)
-#end
 #end
 }

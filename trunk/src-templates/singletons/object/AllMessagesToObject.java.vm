@@ -2,35 +2,41 @@ package ${myPackage};
 
 @@IMPORTS@@
 
-public class AllMessagesToObject implements #classRef("${packageBase}.AllMessages") {
+public class AllMessagesToObject implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
 	private final #classRef("java.util.Queue")<MessageObject> queue;
 
 	public AllMessagesToObject(#classRef("java.util.Queue")<MessageObject> queue) {
 		this.queue = queue;
 	}
 
-	public #classRef("${myPackage}.MessageObject") popMessage() {
+	public MessageObject popMessage() {
 		if (queue.isEmpty()) {
 			return null;
 		}
 		return queue.remove();
 	}
 
-	private void add(#classRef("${myPackage}.MessageObject") message) {
+	private void add(MessageObject message) {
 		queue.add(message);
 	}
 
-#foreach($interface in $bundle.Classes)
-#foreach($method in $interface.Methods)
+
+#foreach($pm in $allsubprotocols)
 	@Override
-	public void ${method.Name}(#parameterList($method)) {
-		add(new #classRef("${myPackage}.MessageObject")() {
+	public #classRef($pm.Method.ReturnType) ${pm.Method.Name}() {
+		return this;
+	}
+#end
+
+#foreach($pm in $allmethods)
+	@Override
+	public void ${pm.Method.Name}(#parameterList($pm.Method)) {
+		add(new MessageObject() {
 			@Override
-			public void invoke(#classRef("${packageBase}.AllMessages") receiver) {
-				receiver.${method.Name}($method.ParameterListWithoutTypes);
+			public void invoke(#classRef($protocol) receiver) {
+				receiver.${pm.Chain}${pm.Method.Name}($pm.Method.ParameterListWithoutTypes);
 			}
 		});
 	}
-#end
 #end
 }

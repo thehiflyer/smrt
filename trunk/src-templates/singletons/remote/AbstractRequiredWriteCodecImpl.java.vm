@@ -16,6 +16,18 @@ public abstract class AbstractRequiredWriteCodecImpl extends #classRef("se.smrt.
 		}
 	}
 #end
+#if($type.isArray())#set($t = $type.ArrayComponent)
+
+	@Override
+	public void write#capitalize($type.DescriptionWithGenerics)(#classRef("java.io.OutputStream") output, #classRef($type) #camelCase($type.DescriptionWithGenerics)) throws #classRef("java.io.IOException") {
+		int size = #camelCase($type.DescriptionWithGenerics).length;
+		writeInt(output, size);
+		for (int i = 0; i < size; i++) {
+			write#capitalize($t.SimpleName)(output, #camelCase($type.DescriptionWithGenerics)[i]);
+		}
+	}
+#end
+
 #if($type.FullName == "java.util.Map" && $type.GenericParameters.size() >= 2)#set($t1 = $type.GenericParameters.get(0))#set($t2 = $type.GenericParameters.get(1))
 
 	@Override
