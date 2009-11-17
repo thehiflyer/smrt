@@ -1,6 +1,5 @@
 package org.apache.mina.core.session;
 
-public class IoSession {
-	public void write(Object o) {
-	}
+public interface IoSession {
+	org.apache.mina.core.future.WriteFuture write(Object o);
 }

@@ -1,28 +1,17 @@
 package org.apache.mina.core.buffer;
 
-public class IoBuffer {
-	public boolean prefixedDataAvailable(int i, int messageMaxSize) {
-		return false;
-	}
-
-	public int getInt() {
-		return 0;
-	}
-
-	public void get(byte[] data) {
-		
-	}
+public abstract class IoBuffer {
+	public abstract boolean prefixedDataAvailable(int i, int messageMaxSize);
+	public abstract int getInt();
+	public abstract IoBuffer get(byte[] data);
 
 	public static IoBuffer allocate(int i) {
 		return null;
 	}
 
-	public void putInt(int length) {
-	}
+	public abstract IoBuffer putInt(int length);
 
-	public void put(byte[] encoded) {
-	}
+	public abstract IoBuffer put(byte[] encoded);
 
-	public void flip() {
-	}
+	public abstract IoBuffer flip();
 }
