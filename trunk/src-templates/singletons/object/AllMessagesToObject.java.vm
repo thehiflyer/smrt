@@ -1,11 +1,11 @@
-package ${myPackage};
+#set($filename = "${name}AllMessagesToObject.java")package ${myPackage};
 
 @@IMPORTS@@
 
-public class AllMessagesToObject implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
+public class ${name}AllMessagesToObject implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
 	private final #classRef("java.util.Queue")<MessageObject> queue;
 
-	public AllMessagesToObject(#classRef("java.util.Queue")<MessageObject> queue) {
+	public ${name}AllMessagesToObject(#classRef("java.util.Queue")<MessageObject> queue) {
 		this.queue = queue;
 	}
 

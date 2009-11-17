@@ -1,6 +1,6 @@
-package ${myPackage};
+#set($filename = "${name}MessageId.java")package ${myPackage};
 
-public class MessageId {
+public class ${name}MessageId {
 #set($idCount = 0)
 #foreach($pm in $allmethods)
 	public static final int ${pm.Protocol.Type.SimpleName.toUpperCase()}_${pm.Method.Name.toUpperCase()} = $idCount;

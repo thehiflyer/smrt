@@ -1,31 +1,26 @@
-package ${myPackage};
+#set($filename = "${name}SynchronizedReceiver.java")package ${myPackage};
 
 @@IMPORTS@@
 
-public class SynchronizedReceiver implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
+public class ${name}SynchronizedReceiver implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
 	private final #classRef($protocol) receiver;
 
-	public SynchronizedReceiver(#classRef($protocol) receiver) {
+	public ${name}SynchronizedReceiver(#classRef($protocol) receiver) {
 		this.receiver = receiver;
 	}
 
-#macro(worker $p $chain)
-#foreach($method in $p.methods)
-#if($method.returnType.FullName == "void")
+
+#foreach($pm in $allsubprotocols)
 	@Override
-	public synchronized #classRef(${method.returnType}) ${method.Name}(#parameterList($method)) {
-		receiver.${chain}${method.Name}($method.ParameterListWithoutTypes);
-	}
-#else
-#set($m = ${method.Name})
-	@Override
-	public #classRef(${method.returnType}) ${method.Name}(#parameterList($method)) {
+	public #classRef($pm.Method.ReturnType) ${pm.Method.Name}() {
 		return this;
 	}
-#worker($p.getSubProtocol(${method.returnType}) "${chain}${m}().")
-#end
-#end
 #end
 
-#worker($protocol "")
+#foreach($pm in $allmethods)
+	@Override
+	public synchronized void ${pm.Method.Name}(#parameterList($pm.Method)) {
+		receiver.${pm.Chain}${pm.Method.Name}($pm.Method.ParameterListWithoutTypes);
+	}
+#end
 }

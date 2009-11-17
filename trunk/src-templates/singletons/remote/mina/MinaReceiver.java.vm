@@ -1,13 +1,13 @@
-package ${myPackage};
+#set($filename = "${name}MinaReceiver.java")package ${myPackage};
 
 @@IMPORTS@@
 
-public class MinaReceiver implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
-	private final #classRef("${packageBase}.remote.OutgoingMessageHandler<java.io.ByteArrayOutputStream>") receiver;
+public class ${name}MinaReceiver implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
+	private final #classRef("${packageBase}.remote.${name}OutgoingMessageHandler<? extends java.io.ByteArrayOutputStream>") receiver;
 	private final #classRef("org.apache.mina.core.session.IoSession") ioSession;
 	private final #classRef("java.io.ByteArrayOutputStream") byteArrayOutputStream;
 
-	public MinaReceiver(#classRef("${packageBase}.remote.OutgoingMessageHandler<java.io.ByteArrayOutputStream>") receiver, #classRef("org.apache.mina.core.session.IoSession") ioSession) {
+	public ${name}MinaReceiver(#classRef("${packageBase}.remote.${name}OutgoingMessageHandler<? extends java.io.ByteArrayOutputStream>") receiver, #classRef("org.apache.mina.core.session.IoSession") ioSession) {
 		this.receiver = receiver;
 		this.ioSession = ioSession;
 		this.byteArrayOutputStream = receiver.getOutputStream();

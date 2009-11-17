@@ -1,12 +1,12 @@
-package ${myPackage};
+#set($filename = "${name}CodecTest.java")package ${myPackage};
 
 @@IMPORTS@@
 
-public class CodecTest {
- 	private final #classRef("${packageBase}.remote.RequiredReadCodec") readCodec;
- 	private final #classRef("${packageBase}.remote.RequiredWriteCodec") writeCodec;
-	private final #classRef("${myPackage}.ObjectFactory") objFactory;
-	public CodecTest(#classRef("${packageBase}.remote.RequiredReadCodec") readCodec, #classRef("${packageBase}.remote.RequiredWriteCodec") writeCodec, #classRef("ObjectFactory") objFactory) {
+public class ${name}CodecTest {
+ 	private final #classRef("${packageBase}.remote.${name}RequiredReadCodec") readCodec;
+ 	private final #classRef("${packageBase}.remote.${name}RequiredWriteCodec") writeCodec;
+	private final #classRef("${myPackage}.${name}ObjectFactory") objFactory;
+	public ${name}CodecTest(#classRef("${packageBase}.remote.${name}RequiredReadCodec") readCodec, #classRef("${packageBase}.remote.${name}RequiredWriteCodec") writeCodec, #classRef("${name}ObjectFactory") objFactory) {
 		this.readCodec = readCodec;
 		this.writeCodec = writeCodec;
 		this.objFactory = objFactory;

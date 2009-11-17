@@ -1,8 +1,8 @@
-package ${myPackage};
+#set($filename = "${name}ObjectFactory.java")package ${myPackage};
 
 @@IMPORTS@@
 
-public interface ObjectFactory {
+public interface ${name}ObjectFactory {
 #foreach($type in $types)
 	#classRef("java.util.List<? extends $type.FullNameWithGenerics>") create#capitalize($type.DescriptionWithGenerics)List();
 #end

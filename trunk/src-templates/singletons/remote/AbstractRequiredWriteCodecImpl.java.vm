@@ -1,8 +1,8 @@
-package ${myPackage};
+#set($filename = "${name}AbstractRequiredWriteCodecImpl.java")package ${myPackage};
 
 @@IMPORTS@@
 
-public abstract class AbstractRequiredWriteCodecImpl extends #classRef("se.smrt.core.remote.DefaultCodecImpl") implements #classRef("${myPackage}.RequiredWriteCodec") {
+public abstract class ${name}AbstractRequiredWriteCodecImpl extends #classRef("se.smrt.core.remote.DefaultCodecImpl") implements #classRef("${myPackage}.${name}RequiredWriteCodec") {
 
 #foreach($type in $types)
 #if($type.FullName == "java.util.List" && $type.GenericParameters.size() > 0)#set($t = $type.GenericParameters.get(0))

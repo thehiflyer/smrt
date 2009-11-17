@@ -131,6 +131,7 @@ public class MessageCodeGenerator implements Processor {
 	private void generateJavaFiles(VelocityEngine engine, ProtocolData protocolData, Collection<String> singletons) throws Exception {
 		VelocityContext context = getContext(engine);
 		context.put("protocol", protocolData);
+        context.put("name", protocolData.getName());
 
 		context.put("allmethods", getAllMethods(protocolData));
 		context.put("allsubprotocols", getAllSubprotocols(protocolData));
@@ -344,14 +345,19 @@ public class MessageCodeGenerator implements Processor {
 
 		ImportManager importManager = new ImportManager(myPackage);
 		context.put("importManager", importManager);
+        context.remove("filename");
 
-		FileObject resource = filer.createResource(StandardLocation.SOURCE_OUTPUT, myPackage, outputFileName, (Element) null);
 		StringWriter writer = new StringWriter();
 		engine.evaluate(context, writer, templateFileName + ".vm", new FileReader(new File(templateDir, templateFileName + ".vm")));
 		writer.flush();
 		String result = writer.getBuffer().toString();
 		result = importManager.postProcess(result);
 
+        if (context.get("filename") != null) {
+            outputFileName = (String) context.get("filename");
+        }
+
+        FileObject resource = filer.createResource(StandardLocation.SOURCE_OUTPUT, myPackage, outputFileName, (Element) null);
 		Writer writer2 = resource.openWriter();
 		engine.evaluate(context, writer2, "header.vm", new FileReader(new File(templateDir, "core/header.vm")));
 		writer2.append(result);

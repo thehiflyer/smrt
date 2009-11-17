@@ -1,11 +1,11 @@
-package ${myPackage};
+#set($filename = "${name}IncomingMessageHandler.java")package ${myPackage};
 
 @@IMPORTS@@
 
-public class IncomingMessageHandler {
-	private final #classRef("${myPackage}.RequiredReadCodec") codec;
+public class ${name}IncomingMessageHandler {
+	private final #classRef("${myPackage}.${name}RequiredReadCodec") codec;
 
-	public IncomingMessageHandler(#classRef("${myPackage}.RequiredReadCodec") codec) {
+	public ${name}IncomingMessageHandler(#classRef("${myPackage}.${name}RequiredReadCodec") codec) {
 		this.codec = codec;
 	}
 
@@ -13,7 +13,7 @@ public class IncomingMessageHandler {
 		int messageId = codec.readInt(input);
 		switch (messageId) {
 #foreach($pm in $allmethods)
-			case MessageId.${pm.Protocol.Type.SimpleName.toUpperCase()}_${pm.Method.Name.toUpperCase()}: {
+			case ${name}MessageId.${pm.Protocol.Type.SimpleName.toUpperCase()}_${pm.Method.Name.toUpperCase()}: {
 #foreach($parameter in $pm.Method.Parameters)
 				#classRef($parameter.Type) $parameter.Name = codec.read#capitalize(${parameter.Type.DescriptionWithGenerics})(input);
 #end

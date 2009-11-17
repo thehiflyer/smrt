@@ -1,10 +1,10 @@
-package ${myPackage};
+#set($filename = "${name}EmptyReceiver.java")package ${myPackage};
 
 @@IMPORTS@@
 
-public class EmptyReceiver implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
-	private static final EmptyReceiver instance = new EmptyReceiver();
-	public static EmptyReceiver getSingleton() {
+public class ${name}EmptyReceiver implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
+	private static final ${name}EmptyReceiver instance = new ${name}EmptyReceiver();
+	public static ${name}EmptyReceiver getSingleton() {
 		return instance;
 	}
 #foreach($pm in $allsubprotocols)
