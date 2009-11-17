@@ -35,12 +35,33 @@
 	</target>
 
 	<target name="package" depends="compile-runtime, compile-generator">
-		<jar destfile="build/smrt-generator.jar">
-			<fileset dir="build/generator"/>
+		<mkdir dir="${baseDir}/build/smrt-release" />
+		<jar destfile="${baseDir}/build/smrt-release/smrt-generator.jar">
+			<fileset dir="${baseDir}/build/generator"/>
 		</jar>
-		<jar destfile="build/smrt-runtime.jar">
-			<fileset dir="build/runtime"/>
+		<jar destfile="${baseDir}/build/smrt-release/smrt-runtime.jar">
+			<fileset dir="${baseDir}/build/runtime"/>
 		</jar>
+		<jar destfile="${baseDir}/build/smrt-release/smrt-stubs.jar">
+			<fileset dir="${baseDir}/build/stub"/>
+		</jar>
+		<copy toDir="${baseDir}/build/smrt-release" file="${baseDir}/macros.xml" />
+		<mkdir dir="${baseDir}/build/smrt-release/src-templates" />
+		<copy toDir="${baseDir}/build/smrt-release/src-templates">
+			<fileset dir="${baseDir}/src-templates">
+				<exclude name="**/.svn" />
+			</fileset>
+		</copy>
+		<copy toDir="${baseDir}/build/smrt-release">
+			<fileset dir="${baseDir}/lib">
+				<exclude name="**/.svn" />
+			</fileset>
+		</copy>
+        <zip destfile="${baseDir}/build/smrt-release.zip" >
+            <fileset dir="${baseDir}/build">
+                <include name="smrt-release/**" />
+            </fileset>
+        </zip>
 	</target>
 	
 	<target name="compile-runtime" depends="compile-stubs">
@@ -89,6 +110,7 @@
 		</javac>
 	</target>
 
+	<dirname property="smrtDir" file="${ant.file}"/>
 	<import file="macros.xml" />
 	
 	<target name="compile-domain" depends="compile-generator, compile-stubs">
@@ -104,27 +126,6 @@
 				<classpath path="${baseDir}/build/generator" />
 			</javac-options>		
 		</smrt-generate>
-		
-		<!--mkdir dir="build/domain"/>
-		<javac
-			destdir="build/domain"
-			debug="true"
-			target="1.6"
-			source="1.6"
-			classpathref="dependencies.domain"
-			fork="yes"
-			>
-			
-				<compilerarg value="-Atemplatedir=src-templates" />
-				<compilerarg value="-processor" />
-				<compilerarg value="se.smrt.generator.MessageCodeGenerator" />
-				<classpath path="build/generator" />
-				<classpath refid="dependencies.generator"/>
-				<classpath path="templates" />
-
-			<src path="src-example">
-			</src>
-		</javac-->
 	</target>
 
 </project>
