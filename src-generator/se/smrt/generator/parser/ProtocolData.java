@@ -52,7 +52,11 @@ public class ProtocolData {
 		return type.toString();
 	}
 
+    public String getName() {
+        return protocolName;
+    }
+
 	public boolean isRootProtocol() {
-		return !protocolName.equals("NOT_A_ROOT_PROTOCOL");
+		return !protocolName.equals("");
 	}
 }

@@ -1,13 +1,13 @@
-package ${myPackage};
+#set($filename = "${name}OutgoingMessageHandler.java")package ${myPackage};
 
 @@IMPORTS@@
 
-public class OutgoingMessageHandler<T extends #classRef("java.io.OutputStream")> implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
-	private final #classRef("${myPackage}.RequiredWriteCodec") codec;
+public class ${name}OutgoingMessageHandler<T extends #classRef("java.io.OutputStream")> implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
+	private final #classRef("${myPackage}.${name}RequiredWriteCodec") codec;
 	private final T output;
 	private final #classRef("se.smrt.core.remote.ExceptionListener") errorHandler;
 
-	public OutgoingMessageHandler(#classRef("${myPackage}.RequiredWriteCodec") codec, T output, #classRef("se.smrt.core.remote.ExceptionListener") errorHandler) {
+	public ${name}OutgoingMessageHandler(#classRef("${myPackage}.${name}RequiredWriteCodec") codec, T output, #classRef("se.smrt.core.remote.ExceptionListener") errorHandler) {
 		this.codec = codec;
 		this.output = output;
 		this.errorHandler = errorHandler;
@@ -28,7 +28,7 @@ public class OutgoingMessageHandler<T extends #classRef("java.io.OutputStream")>
 	@Override
 	public void ${pm.Method.Name}(#parameterList($pm.Method)) {
 		try {
-			codec.writeInt(output, MessageId.${pm.Protocol.Type.SimpleName.toUpperCase()}_${pm.Method.Name.toUpperCase()});
+			codec.writeInt(output, ${name}MessageId.${pm.Protocol.Type.SimpleName.toUpperCase()}_${pm.Method.Name.toUpperCase()});
 #foreach($parameter in $pm.Method.Parameters)
 			codec.write#capitalize(${parameter.Type.DescriptionWithGenerics})(output, $parameter.Name);
 #end

@@ -1,38 +1,38 @@
-package ${myPackage};
+#set($filename = "${name}MultiDispatcher.java")package ${myPackage};
 
 @@IMPORTS@@
 
-public class MultiDispatcher implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
+public class ${name}MultiDispatcher implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
 
 	private final #classRef("java.util.Collection<$protocol.Type.FullNameWithGenerics>") receivers;
 
-	public MultiDispatcher(#classRef("java.util.Collection<$protocol.Type.FullNameWithGenerics>") receivers) {
+	public ${name}MultiDispatcher(#classRef("java.util.Collection<$protocol.Type.FullNameWithGenerics>") receivers) {
 		this.receivers = receivers;
 	}
 
-	public MultiDispatcher() {
+	public ${name}MultiDispatcher() {
 		this(new #classRef("java.util.ArrayList<$protocol.Type.FullNameWithGenerics>")());
 	}
 
-	public MultiDispatcher(#classRef("java.lang.Iterable<$protocol.Type.FullNameWithGenerics>") receivers) {
+	public ${name}MultiDispatcher(#classRef("java.lang.Iterable<$protocol.Type.FullNameWithGenerics>") receivers) {
 		this();
 		for (#classRef($protocol.Type) receiver : receivers) {
 			add(receiver);
 		}
 	}
 
-	public MultiDispatcher(#classRef($protocol.Type)... receivers) {
+	public ${name}MultiDispatcher(#classRef($protocol.Type)... receivers) {
 		this(new #classRef("java.util.ArrayList<$protocol.Type.FullNameWithGenerics>")(#classRef("java.util.Arrays").asList(receivers)));
 	}
 
-	public MultiDispatcher add(#classRef($protocol.Type) receiver) {
+	public ${name}MultiDispatcher add(#classRef($protocol.Type) receiver) {
 		receivers.add(receiver);
 		return this;
 	}
 
 #foreach($p in $subprotocols)
-	public MultiDispatcher add(#classRef($p.Type) receiver) {
-		receivers.add(#classRef("${p.Type.Package}.adapter.Adapters").create${p.Type.SimpleName}(receiver));
+	public ${name}MultiDispatcher add(#classRef($p.Type) receiver) {
+		receivers.add(#classRef("${p.Type.Package}.adapter.${name}Adapters").create${p.Type.SimpleName}(receiver));
 		return this;
 	}
 

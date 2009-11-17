@@ -1,8 +1,8 @@
-package ${myPackage};
+#set($filename = "${name}Adapters.java")package ${myPackage};
 
 @@IMPORTS@@
 
-public class Adapters {
+public class ${name}Adapters {
 #foreach($p in $subprotocols)
 	public static #classRef($protocol) create${p.Type.SimpleName}(#classRef($p) receiver) {
 		return new ${p.Type.SimpleName}Adapter(receiver);

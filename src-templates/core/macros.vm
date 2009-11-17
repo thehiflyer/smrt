@@ -6,3 +6,4 @@
 
 #macro (camelCase $name)${name.substring(0,1).toLowerCase()}${name.substring(1)}#end
 
+#macro (fileName $name)${_fileName.clear()}${_fileName.append($name)}#end
