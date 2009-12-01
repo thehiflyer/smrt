@@ -1,0 +1,19 @@
+#set($filename = "${name}Checksum.java")package ${myPackage};
+
+@@IMPORTS@@
+
+public class ${name}Checksum {
+    /* Source for checksum:
+$checksum.Source
+    */
+
+    private static final byte[] checksum = new byte[]{
+#foreach($byte in $checksum.Bytes)
+        $byte,
+#end
+    };
+
+    public static final byte[] getChecksum() {
+        return #classRef("java.util.Arrays").copyOf(checksum, checksum.length);
+    }
+}

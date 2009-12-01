@@ -1,9 +1,6 @@
 package se.smrt.generator.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.io.IOException;
 
 import se.smrt.core.SmrtProtocol;
