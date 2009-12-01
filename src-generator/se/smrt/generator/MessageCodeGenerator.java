@@ -151,6 +151,9 @@ public class MessageCodeGenerator implements Processor {
 
 		context.put("types", types);
 
+        Checksum checksum = new Checksum(protocolData);
+        context.put("checksum", checksum);
+
 		for (String singleton : singletons) {
 			generate(engine, protocolData, context, "singletons" + singleton, singleton.substring(1));
 		}
