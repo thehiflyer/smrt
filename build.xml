@@ -36,13 +36,15 @@
 
 	<target name="package" depends="compile-runtime, compile-generator">
 		<mkdir dir="${baseDir}/build/smrt-release" />
-		<jar destfile="${baseDir}/build/smrt-release/smrt-generator.jar">
+		<mkdir dir="${baseDir}/build/smrt-release/lib" />
+		
+		<jar destfile="${baseDir}/build/smrt-release/lib/smrt-generator.jar">
 			<fileset dir="${baseDir}/build/generator"/>
 		</jar>
-		<jar destfile="${baseDir}/build/smrt-release/smrt-runtime.jar">
+		<jar destfile="${baseDir}/build/smrt-release/lib/smrt-runtime.jar">
 			<fileset dir="${baseDir}/build/runtime"/>
 		</jar>
-		<jar destfile="${baseDir}/build/smrt-release/smrt-stubs.jar">
+		<jar destfile="${baseDir}/build/smrt-release/lib/smrt-stubs.jar">
 			<fileset dir="${baseDir}/build/stub"/>
 		</jar>
 		<copy toDir="${baseDir}/build/smrt-release" file="${baseDir}/macros.xml" />
@@ -52,7 +54,7 @@
 				<exclude name="**/.svn" />
 			</fileset>
 		</copy>
-		<copy toDir="${baseDir}/build/smrt-release">
+		<copy toDir="${baseDir}/build/smrt-release/lib">
 			<fileset dir="${baseDir}/lib">
 				<exclude name="**/.svn" />
 			</fileset>
