@@ -3,17 +3,13 @@
 	<fail unless="smrtDir" />
 
 	<path id="smrt.classpath">
-		<!-- for released -->
-		<fileset dir="${smrtDir}">
-			<include name="**/*.jar"/>
-		</fileset>
-		
-		<!-- for internal -->
+		<!-- for internal only -->
 		<pathelement path="${smrtDir}/build/stub"/>
 		<pathelement path="${smrtDir}/build/generator"/>
 		<pathelement path="${smrtDir}/build/runtime"/>
 		
-		<fileset dir="${smrtDir}/lib" erroronmissingdir="false">
+		<!-- for released and internal -->
+		<fileset dir="${smrtDir}/lib">
 			<include name="**/*.jar"/>
 		</fileset>		
 	</path>
