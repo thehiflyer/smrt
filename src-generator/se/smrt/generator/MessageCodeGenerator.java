@@ -142,6 +142,10 @@ public class MessageCodeGenerator implements Processor {
 		System.out.println(subProtocols);
 
 		Set<String> typesString = new TreeSet<String>();
+		
+		// Needed for sendVersion
+		typesString.add("byte[]");
+
 		findTypes(protocolData, typesString);
 
 		Set<Type> types = new TreeSet<Type>();

@@ -11,6 +11,18 @@ public class ${name}OutgoingMessageHandler<T extends #classRef("java.io.OutputSt
 		this.codec = codec;
 		this.output = output;
 		this.errorHandler = errorHandler;
+		sendVersion();
+	}
+
+	private void sendVersion() {
+		try {
+			codec.writeInt(output, ${name}MessageId.SMRTBUILTIN_SENDVERSION);
+			codec.writeStringAsAscii(output, ${name}Checksum.SMRT_VERSION);
+			codec.writeStringAsAscii(output, ${name}Checksum.PROTOCOL_VERSION);
+			codec.writeByteArray(output, ${name}Checksum.getChecksum());
+		} catch (#classRef("java.io.IOException") e) {
+			errorHandler.onException(e);
+		}
 	}
 
 	public T getOutputStream() {

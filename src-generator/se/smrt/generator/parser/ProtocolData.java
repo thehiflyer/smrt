@@ -8,14 +8,16 @@ import se.smrt.generator.types.Method;
 import se.smrt.generator.types.Type;
 
 public class ProtocolData {
+	private final String protocolVersion;
 	private final Map<Type, ProtocolData> protocols;
 	private final String protocolName;
 
 	private final List<Method> methods;
 	private final Type type;
 
-	public ProtocolData(String className, String protocolName, ArrayList<Method> methods, Map<Type, ProtocolData> protocols) {
+	public ProtocolData(String className, String protocolName, String protocolVersion, ArrayList<Method> methods, Map<Type, ProtocolData> protocols) {
 		this.protocolName = protocolName;
+		this.protocolVersion = protocolVersion;
 		this.protocols = protocols;
 		this.type = new Type(className);
 		this.methods = methods;
@@ -55,5 +57,9 @@ public class ProtocolData {
 
 	public boolean isRootProtocol() {
 		return !protocolName.equals("");
+	}
+
+	public String getVersion() {
+		return protocolVersion;
 	}
 }

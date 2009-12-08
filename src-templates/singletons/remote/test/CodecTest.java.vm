@@ -19,7 +19,6 @@ public class ${name}CodecTest {
 #end
 	}
 
-
 #foreach($type in $types)
 	public void test#capitalize($type.DescriptionWithGenerics)() throws #classRef("java.io.IOException") {
 		boolean hasRun = false;
@@ -68,7 +67,11 @@ public class ${name}CodecTest {
 
 #foreach($type in $types)
 	public boolean equals#capitalize($type.DescriptionWithGenerics)(#classRef($type) a, #classRef($type) b) {
+#if($type.Array)
+		return #classRef("java.util.Arrays").equals(a, b);
+#else
 		return a.equals(b);
+#end
 	}
 #end
 

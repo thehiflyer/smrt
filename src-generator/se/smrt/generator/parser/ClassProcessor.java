@@ -31,9 +31,10 @@ public class ClassProcessor implements ElementVisitor<ProtocolData, Map<Type, Pr
 	public ProtocolData visitType(TypeElement e, Map<Type, ProtocolData> protocols) {
 		String className = e.getQualifiedName().toString();
 		String protocolName = e.getAnnotation(SmrtProtocol.class).value();
+		String protocolVersion = e.getAnnotation(SmrtProtocol.class).version();
 
 		ArrayList<Method> methods = new ArrayList<Method>();
-		ProtocolData protocol = new ProtocolData(className, protocolName, methods, protocols);
+		ProtocolData protocol = new ProtocolData(className, protocolName, protocolVersion, methods, protocols);
 
 		for (Element element : e.getEnclosedElements())
 		{
