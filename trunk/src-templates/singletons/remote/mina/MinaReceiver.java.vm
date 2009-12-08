@@ -2,7 +2,7 @@
 
 @@IMPORTS@@
 
-public class ${name}MinaReceiver implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
+public class ${name}MinaReceiver implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end, #classRef("se.smrt.core.remote.RemoteProtocol") {
 	private final #classRef("${packageBase}.remote.${name}OutgoingMessageHandler<? extends java.io.ByteArrayOutputStream>") receiver;
 	private final #classRef("org.apache.mina.core.session.IoSession") ioSession;
 	private final #classRef("java.io.ByteArrayOutputStream") byteArrayOutputStream;
@@ -12,7 +12,14 @@ public class ${name}MinaReceiver implements #classRef($protocol)#foreach($p in $
 		this.ioSession = ioSession;
 		this.byteArrayOutputStream = receiver.getOutputStream();
 	}
-	
+
+	@Override
+	public void sendVersion(String smrtVersion, String protocolVersion, byte[] checksum) {
+		receiver.sendVersion(smrtVersion, protocolVersion, checksum);
+		ioSession.write(byteArrayOutputStream.toByteArray());
+		byteArrayOutputStream.reset();
+	}
+
 #foreach($pm in $allsubprotocols)
 	@Override
 	public #classRef($pm.Method.ReturnType) ${pm.Method.Name}() {

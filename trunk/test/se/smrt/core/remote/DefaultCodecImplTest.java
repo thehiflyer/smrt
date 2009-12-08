@@ -16,6 +16,7 @@ public class DefaultCodecImplTest {
 
 	@Test
 	public void testCodecInt() throws IOException {
+		System.out.println(String.format("%02x", 0));
 		DefaultCodecImpl codec = new DefaultCodecImpl();
 
 		for (int i : intList) {
