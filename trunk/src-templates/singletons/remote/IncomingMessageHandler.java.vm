@@ -9,15 +9,24 @@ public class ${name}IncomingMessageHandler {
 		this.codec = codec;
 	}
 
-	public void handleMessage(#classRef("java.io.InputStream") input, #classRef($protocol) receiver) throws #classRef("java.io.IOException") {
+	public <T extends #classRef($protocol) & #classRef("se.smrt.core.remote.RemoteProtocol")> void handleMessage(#classRef("java.io.InputStream") input, T receiver) throws #classRef("java.io.IOException") {
 		int messageId = codec.readInt(input);
 		switch (messageId) {
+			case ${name}MessageId.SMRTBUILTIN_SENDVERSION: {
+				String smrtVersion = codec.readStringAsAscii(input);
+				String protocolVersion = codec.readStringAsAscii(input);
+				byte[] checksum = codec.readByteArray(input);
+				receiver.sendVersion(smrtVersion, protocolVersion, checksum);
+			}
+			break;
 #foreach($pm in $allmethods)
 			case ${name}MessageId.${pm.Protocol.Type.SimpleName.toUpperCase()}_${pm.Method.Name.toUpperCase()}: {
 #foreach($parameter in $pm.Method.Parameters)
-				#classRef($parameter.Type) $parameter.Name = codec.read#capitalize(${parameter.Type.DescriptionWithGenerics})(input);
+				#classRef($parameter.Type) $parameter.Name =
+				codec.read#capitalize(${parameter.Type.DescriptionWithGenerics})(input);
 #end
-				receiver.${pm.Chain}${pm.Method.Name}($pm.Method.ParameterListWithoutTypes);
+				receiver.
+				${pm.Chain}${pm.Method.Name}($pm.Method.ParameterListWithoutTypes);
 			}
 			break;
 #end

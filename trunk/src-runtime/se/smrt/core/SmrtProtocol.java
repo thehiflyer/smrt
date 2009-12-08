@@ -11,4 +11,6 @@ public @interface SmrtProtocol {
 	public static final String DEFAULT_NAME = "";
 
 	String value() default DEFAULT_NAME;
+
+	String version() default "";	
 }

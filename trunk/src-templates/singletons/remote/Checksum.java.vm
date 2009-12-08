@@ -3,6 +3,9 @@
 @@IMPORTS@@
 
 public class ${name}Checksum {
+	public static final String SMRT_VERSION = "1.0";
+	public static final String PROTOCOL_VERSION = "${protocol.Version}";
+
     /* Source for checksum:
 $checksum.Source
     */
@@ -16,4 +19,15 @@ $checksum.Source
     public static final byte[] getChecksum() {
         return #classRef("java.util.Arrays").copyOf(checksum, checksum.length);
     }
+
+	public static String checksumAsString(byte[] checksum) {
+		if (checksum == null) {
+			return null;
+		}
+		#classRef("java.lang.StringBuilder") builder = new #classRef("java.lang.StringBuilder")();
+		for (int i = 0; i < checksum.length; i++) {
+			builder.append(Integer.toHexString(checksum[i]));
+		}
+		return builder.toString();
+	}
 }
