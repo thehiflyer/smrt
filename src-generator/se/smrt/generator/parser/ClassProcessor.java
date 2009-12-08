@@ -1,6 +1,7 @@
 package se.smrt.generator.parser;
 
 import se.smrt.core.SmrtProtocol;
+import se.smrt.core.ProtocolVersion;
 import se.smrt.generator.types.Method;
 import se.smrt.generator.types.Type;
 
@@ -31,7 +32,8 @@ public class ClassProcessor implements ElementVisitor<ProtocolData, Map<Type, Pr
 	public ProtocolData visitType(TypeElement e, Map<Type, ProtocolData> protocols) {
 		String className = e.getQualifiedName().toString();
 		String protocolName = e.getAnnotation(SmrtProtocol.class).value();
-		String protocolVersion = e.getAnnotation(SmrtProtocol.class).version();
+		ProtocolVersion annotation = e.getAnnotation(ProtocolVersion.class);
+		String protocolVersion = annotation != null ? annotation.value() : "";
 
 		ArrayList<Method> methods = new ArrayList<Method>();
 		ProtocolData protocol = new ProtocolData(className, protocolName, protocolVersion, methods, protocols);

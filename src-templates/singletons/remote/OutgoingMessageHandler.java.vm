@@ -2,7 +2,7 @@
 
 @@IMPORTS@@
 
-public class ${name}OutgoingMessageHandler<T extends #classRef("java.io.OutputStream")> implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end {
+public class ${name}OutgoingMessageHandler<T extends #classRef("java.io.OutputStream")> implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end, #classRef("se.smrt.core.remote.RemoteProtocol") {
 	private final #classRef("${myPackage}.${name}RequiredWriteCodec") codec;
 	private final T output;
 	private final #classRef("se.smrt.core.remote.ExceptionListener") errorHandler;
@@ -11,15 +11,15 @@ public class ${name}OutgoingMessageHandler<T extends #classRef("java.io.OutputSt
 		this.codec = codec;
 		this.output = output;
 		this.errorHandler = errorHandler;
-		sendVersion();
 	}
 
-	private void sendVersion() {
+	@Override
+	public void sendVersion(String smrtVersion, String protocolVersion, byte[] checksum) {
 		try {
 			codec.writeInt(output, ${name}MessageId.SMRTBUILTIN_SENDVERSION);
-			codec.writeStringAsAscii(output, ${name}Checksum.SMRT_VERSION);
-			codec.writeStringAsAscii(output, ${name}Checksum.PROTOCOL_VERSION);
-			codec.writeByteArray(output, ${name}Checksum.getChecksum());
+			codec.writeStringAsAscii(output, smrtVersion);
+			codec.writeStringAsAscii(output, protocolVersion);
+			codec.writeByteArray(output, checksum);
 		} catch (#classRef("java.io.IOException") e) {
 			errorHandler.onException(e);
 		}

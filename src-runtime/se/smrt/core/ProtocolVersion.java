@@ -7,8 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-public @interface SmrtProtocol {
-	public static final String DEFAULT_NAME = "";
-
-	String value() default DEFAULT_NAME;
+public @interface ProtocolVersion {
+	public abstract String value() default "";
 }
