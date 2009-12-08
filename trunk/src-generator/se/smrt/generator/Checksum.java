@@ -19,7 +19,7 @@ public class Checksum {
         StringWriter sourceWriter = new StringWriter();
         digestProtocol(protocolData, new HashSet<ProtocolData>(), new PrintWriter(sourceWriter));
 
-        source = sourceWriter.getBuffer().toString();
+        source = sourceWriter.getBuffer().toString().replace("\r\n", "\n");
         
         MessageDigest digest = MessageDigest.getInstance("SHA-1");
         bytes = digest.digest(source.getBytes("UTF-8"));
