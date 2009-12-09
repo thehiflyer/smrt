@@ -2,20 +2,19 @@
 
 @@IMPORTS@@
 
-public class ${name}MinaReceiver implements #classRef($protocol)#foreach($p in $subprotocols), #classRef($p)#end, #classRef("se.smrt.core.remote.RemoteProtocol") {
-	private final #classRef("${packageBase}.remote.${name}OutgoingMessageHandler<? extends java.io.ByteArrayOutputStream>") receiver;
+public class ${name}MinaReceiver<T extends #classRef("java.io.ByteArrayOutputStream")> extends #classRef("${packageBase}.remote.${name}OutgoingMessageHandler<T>") {
 	private final #classRef("org.apache.mina.core.session.IoSession") ioSession;
 	private final #classRef("java.io.ByteArrayOutputStream") byteArrayOutputStream;
 
-	public ${name}MinaReceiver(#classRef("${packageBase}.remote.${name}OutgoingMessageHandler<? extends java.io.ByteArrayOutputStream>") receiver, #classRef("org.apache.mina.core.session.IoSession") ioSession) {
-		this.receiver = receiver;
+	public ${name}MinaReceiver(#classRef("${packageBase}.remote.${name}RequiredWriteCodec") codec, T output, #classRef("se.smrt.core.remote.ExceptionListener") errorHandler, #classRef("org.apache.mina.core.session.IoSession") ioSession) {
+		super(codec, output, errorHandler);
 		this.ioSession = ioSession;
-		this.byteArrayOutputStream = receiver.getOutputStream();
+		this.byteArrayOutputStream = getOutputStream();
 	}
 
 	@Override
 	public void sendVersion(String smrtVersion, String protocolVersion, byte[] checksum) {
-		receiver.sendVersion(smrtVersion, protocolVersion, checksum);
+		super.sendVersion(smrtVersion, protocolVersion, checksum);
 		ioSession.write(byteArrayOutputStream.toByteArray());
 		byteArrayOutputStream.reset();
 	}
@@ -30,7 +29,7 @@ public class ${name}MinaReceiver implements #classRef($protocol)#foreach($p in $
 #foreach($pm in $allmethods)
 	@Override
 	public void ${pm.Method.Name}(#parameterList($pm.Method)) {
-		receiver.${pm.Chain}${pm.Method.Name}($pm.Method.ParameterListWithoutTypes);
+		super.${pm.Method.Name}($pm.Method.ParameterListWithoutTypes);
 		ioSession.write(byteArrayOutputStream.toByteArray());
 		byteArrayOutputStream.reset();
 	}
