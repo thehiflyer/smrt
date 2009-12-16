@@ -6,6 +6,8 @@ public class ${name}MinaReceiver<T extends #classRef("java.io.ByteArrayOutputStr
 	private final #classRef("org.apache.mina.core.session.IoSession") ioSession;
 	private final #classRef("java.io.ByteArrayOutputStream") byteArrayOutputStream;
 
+	private final #classRef("java.util.concurrent.locks.ReentrantLock") lock = new #classRef("java.util.concurrent.locks.ReentrantLock")();
+
 	public ${name}MinaReceiver(#classRef("${packageBase}.remote.${name}RequiredWriteCodec") codec, T output, #classRef("se.smrt.core.remote.ExceptionListener") errorHandler, #classRef("org.apache.mina.core.session.IoSession") ioSession) {
 		super(codec, output, errorHandler);
 		this.ioSession = ioSession;
@@ -14,9 +16,14 @@ public class ${name}MinaReceiver<T extends #classRef("java.io.ByteArrayOutputStr
 
 	@Override
 	public void sendVersion(String smrtVersion, String protocolVersion, byte[] checksum) {
-		super.sendVersion(smrtVersion, protocolVersion, checksum);
-		ioSession.write(byteArrayOutputStream.toByteArray());
-		byteArrayOutputStream.reset();
+		lock.lock();
+		try {
+			super.sendVersion(smrtVersion, protocolVersion, checksum);
+			ioSession.write(byteArrayOutputStream.toByteArray());
+			byteArrayOutputStream.reset();
+		} finally {
+			lock.unlock();
+		}
 	}
 
 #foreach($pm in $allsubprotocols)
@@ -29,9 +36,14 @@ public class ${name}MinaReceiver<T extends #classRef("java.io.ByteArrayOutputStr
 #foreach($pm in $allmethods)
 	@Override
 	public void ${pm.Method.Name}(#parameterList($pm.Method)) {
-		super.${pm.Method.Name}($pm.Method.ParameterListWithoutTypes);
-		ioSession.write(byteArrayOutputStream.toByteArray());
-		byteArrayOutputStream.reset();
+		lock.lock();
+		try {
+			super.${pm.Method.Name}($pm.Method.ParameterListWithoutTypes);
+			ioSession.write(byteArrayOutputStream.toByteArray());
+			byteArrayOutputStream.reset();
+		} finally {
+			lock.unlock();
+		}
 	}
 #end
 
