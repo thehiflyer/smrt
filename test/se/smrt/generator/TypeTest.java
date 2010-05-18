@@ -1,11 +1,11 @@
 package se.smrt.generator;
 
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import se.smrt.generator.types.Type;
 
 import java.io.IOException;
 
-import se.smrt.generator.types.Type;
+import static org.junit.Assert.assertEquals;
 
 public class TypeTest {
 
@@ -40,6 +40,18 @@ public class TypeTest {
 	}
 
 	@Test
+	public void testGenericsType2WithWildcards() throws IOException {
+		Type t = new Type("java.util.Map<java.lang.String, ? extends java.lang.Number>");
+		assertEquals("java.util.Map", t.getFullName());
+		assertEquals("java.util", t.getPackage());
+		assertEquals("Map", t.getSimpleName());
+		assertEquals(2, t.getGenericParameters().size());
+		assertEquals("String", t.getGenericParameters().get(0).getSimpleName());
+		assertEquals("Number", t.getGenericParameters().get(1).getSimpleName());
+		assertEquals("? extends java.lang.Number", t.getGenericParameters().get(1).getFullNameWithGenericsAndWildcards());
+	}
+
+	@Test
 	public void testGenericsTypeComplex() throws IOException {
 		Type t = new Type("java.util.List<java.util.Map<Foo, Bar>, java.lang.Double>");
 		assertEquals("java.util.List", t.getFullName());
@@ -57,36 +69,36 @@ public class TypeTest {
 	@Test
 	public void testSimpleWildcard() throws IOException {
 		Type t = new Type("?");
-		assertEquals(t.getFullName(), "");
-		assertEquals(t.getSimpleName(), "");
-		assertEquals(t.getPackage(), "");
+		assertEquals("", t.getFullName());
+		assertEquals("", t.getSimpleName());
+		assertEquals("", t.getPackage());
 	}
 
 	@Test
 	public void testSimpleWildcard2() throws IOException {
 		Type t = new Type("List<?>");
-		assertEquals(t.getFullName(), "List");
-		assertEquals(t.getSimpleName(), "List");
-		assertEquals(t.getPackage(), "");
-		assertEquals(t.getFullNameWithGenerics(), "List<?>");
+		assertEquals("List", t.getFullName());
+		assertEquals("List", t.getSimpleName());
+		assertEquals("", t.getPackage());
+		assertEquals("List<?>", t.getFullNameWithGenerics());
 	}
 
 	@Test
 	public void testExtendsWildcard() throws IOException {
 		Type t = new Type("? extends java.util.List");
-		assertEquals(t.getSimpleName(), "List");
-		assertEquals(t.getFullName(), "java.util.List");
-		assertEquals(t.getPackage(), "java.util");
-		assertEquals(t.getFullNameWithGenerics(), "java.util.List");
+		assertEquals("List", t.getSimpleName());
+		assertEquals("java.util.List", t.getFullName());
+		assertEquals("java.util", t.getPackage());
+		assertEquals("java.util.List", t.getFullNameWithGenerics());
 	}
 
 	@Test
 	public void testExtendsWildcard2() throws IOException {
 		Type t = new Type("java.util.List<? extends Foo>");
-		assertEquals(t.getSimpleName(), "List");
-		assertEquals(t.getFullName(), "java.util.List");
-		assertEquals(t.getPackage(), "java.util");
-		assertEquals(t.getFullNameWithGenerics(), "java.util.List<? extends Foo>");
+		assertEquals("List", t.getSimpleName());
+		assertEquals("java.util.List", t.getFullName());
+		assertEquals("java.util", t.getPackage());
+		assertEquals("java.util.List<? extends Foo>", t.getFullNameWithGenerics());
 	}
 
 }

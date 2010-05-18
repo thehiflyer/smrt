@@ -1,6 +1,5 @@
 package se.smrt.generator.types;
 
-import se.smrt.generator.types.Wildcard;
 import se.smrt.generator.Util;
 
 import java.io.DataInputStream;
@@ -158,6 +157,10 @@ public class Type implements Comparable {
 	private String getSimpleDescription() {
 		return getSimpleName().replace("[]", "Array");
 
+	}
+
+	public String getFullNameWithGenericsAndWildcards() {
+		return getFullNameWithGenerics(false);
 	}
 
 	public String getFullNameWithGenerics() {

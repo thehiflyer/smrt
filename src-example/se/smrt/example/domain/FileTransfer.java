@@ -7,5 +7,5 @@ import java.util.Map;
 @SmrtProtocol
 public interface FileTransfer {
 	void sendFile(String fileName, byte[] contents);
-	void sendMap(Map<String, Object> theMap);
+	void sendMap(Map<String, ? extends Number> theMap);
 }
