@@ -34,7 +34,7 @@ public abstract class ${name}AbstractRequiredWriteCodecImpl extends #classRef("s
 	public void write#capitalize($type.DescriptionWithGenerics)(#classRef("java.io.OutputStream") output, #classRef($type) #camelCase($type.DescriptionWithGenerics)) throws #classRef("java.io.IOException") {
 		int size = #camelCase($type.DescriptionWithGenerics).size();
 		writeInt(output, size);
-		for (#classRef("java.util.Map.Entry<$t1.FullNameWithGenerics, $t2.FullNameWithGenerics>") entry : #camelCase($type.DescriptionWithGenerics).entrySet()) {
+		for (#classRef("java.util.Map.Entry<$t1.FullNameWithGenericsAndWildcards, $t2.FullNameWithGenericsAndWildcards>") entry : #camelCase($type.DescriptionWithGenerics).entrySet()) {
 			write#capitalize($t1.SimpleName)(output, entry.getKey());
 			write#capitalize($t2.SimpleName)(output, entry.getValue());
 		}
