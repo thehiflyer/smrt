@@ -87,7 +87,7 @@ public class VlqIntegerTest {
     }
 
 	private void testReadWrite(int value) throws IOException {
-		VlqInteger.writeInt(out, value);
+		VlqInteger.writeLong(out, value);
 		byte[] data = out.toByteArray();
 		/*
 		System.out.print("[");
@@ -97,7 +97,7 @@ public class VlqIntegerTest {
 		System.out.print("]");
 		*/
 		in = new ByteArrayInputStream(data);
-		assertEquals(value, VlqInteger.readInt(in));
+		assertEquals(value, VlqInteger.readLong(in));
 	}
 
 }
