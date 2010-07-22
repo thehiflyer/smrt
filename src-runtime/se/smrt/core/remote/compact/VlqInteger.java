@@ -6,8 +6,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class VlqInteger {
-	private static final long LOWER_BITS_MASK = 0x7FL;
-	private static final int MSB_MASK = 0x80;
+	private static final long LOWER_7BITS_MASK = 0x7FL;
+	private static final long LOWER_6BITS_MASK = 0x3FL;
+	private static final long MASK_BIT8 = 0x80L;
+	private static final long MASK_BIT7 = 0x40L;
 
 	public static void writeInt(OutputStream out, int value) throws IOException {
 		writeLong(out, value);
@@ -17,13 +19,13 @@ public class VlqInteger {
         boolean negative = value < 0;
         value = Math.abs(value);
 
-        if (value <= 0x3FL) {
-            out.write((int) (value | (negative ? 0x40L : 0L)));
+        if (value <= LOWER_6BITS_MASK) {
+            out.write((int) (value | (negative ? MASK_BIT7 : 0L)));
         } else {
-            out.write((int) ((value & 0x3FL) | (negative ? 0x40L : 0) | 0x80L));
+            out.write((int) ((value & LOWER_6BITS_MASK) | (negative ? MASK_BIT7 : 0) | MASK_BIT8));
             value >>= 6;
-            while (value > 0x7FL) {
-                out.write((int) ((value & 0x7FL) | 0x80L));
+            while (value > LOWER_7BITS_MASK) {
+                out.write((int) ((value & LOWER_7BITS_MASK) | MASK_BIT8));
                 value >>= 7;
             }
             out.write((int) value);
@@ -36,18 +38,18 @@ public class VlqInteger {
 
 	public static long readLong(InputStream in) throws IOException {
         int b = in.read();
-        boolean negative = (b & 0x40L) != 0;
-        long value = b & 0x3FL;
+        boolean negative = (b & MASK_BIT7) != 0;
+        long value = b & LOWER_6BITS_MASK;
         int shift = 0;
-        if ((b & 0x80L) != 0) {
+        if ((b & MASK_BIT8) != 0) {
             shift += 6;
             b = in.read();
         } else {
             return negative ? -value : value;
         }
 
-        while ((b & 0x80L) != 0) {
-            value |= (b & 0x7FL) << shift;
+        while ((b & MASK_BIT8) != 0) {
+            value |= (b & LOWER_7BITS_MASK) << shift;
             shift += 7;
             b = in.read();
         }
