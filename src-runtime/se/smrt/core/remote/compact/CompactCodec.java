@@ -37,7 +37,7 @@ public class CompactCodec extends DefaultCodecImpl {
 		VlqInteger.writeLong(output, value);
 	}
 
-		@Override
+	@Override
 	public void writeString(OutputStream out, String v) throws IOException {
 		writeStringAsUTF8(out, v);
 	}
