@@ -14,36 +14,46 @@ public class VlqInteger {
 	}
 
 	public static void writeLong(OutputStream out, long value) throws IOException {
-		writeLongHelper(out, value, true);
-	}
+        boolean negative = value < 0;
+        value = Math.abs(value);
 
-	private static void writeLongHelper(OutputStream out, long value, boolean isFirst) throws IOException {
-		int smallPart = (int) (value & LOWER_BITS_MASK);
-		if (smallPart < value) {
-			writeLongHelper(out, value >>> 7, false);
-		}
-		if(isFirst) {
-			out.write(smallPart);
-		} else {
-			out.write(smallPart | MSB_MASK);
-		}
-	}
+        if (value <= 0x3FL) {
+            out.write((int) (value | (negative ? 0x40L : 0L)));
+        } else {
+            out.write((int) ((value & 0x3FL) | (negative ? 0x40L : 0) | 0x80L));
+            value >>= 6;
+            while (value > 0x7FL) {
+                out.write((int) ((value & 0x7FL) | 0x80L));
+                value >>= 7;
+            }
+            out.write((int) value);
+        }
+    }
 
 	public static int readInt(InputStream in) throws IOException {
 		return (int) readLong(in);
 	}
 
 	public static long readLong(InputStream in) throws IOException {
-		return readLongHelper(in, 0);
-	}
+        int b = in.read();
+        boolean negative = (b & 0x40L) != 0;
+        long value = b & 0x3FL;
+        int shift = 0;
+        if ((b & 0x80L) != 0) {
+            shift += 6;
+            b = in.read();
+        } else {
+            return negative ? -value : value;
+        }
 
-	public static long readLongHelper(InputStream in, long upperValue) throws IOException {
-		long readValue = (long) in.read();
-		long combinedValue = upperValue << 7 | readValue & LOWER_BITS_MASK;
-		if ((readValue & MSB_MASK) != 0) {
-			return readLongHelper(in, combinedValue);
-		}
-		return combinedValue;
+        while ((b & 0x80L) != 0) {
+            value |= (b & 0x7FL) << shift;
+            shift += 7;
+            b = in.read();
+        }
+        value |= b << shift;
+
+        return negative ? -value : value;
 	}
 }
 
