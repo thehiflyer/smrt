@@ -58,6 +58,25 @@ public class VlqIntegerTest {
 		testReadWrite(0x7FFFFFFF);
 	}
 
+    @Test
+    public void testNegative() throws IOException {
+        testReadWrite(-1);
+    }
+
+    @Test
+    public void testNegative100() throws IOException {
+        testReadWrite(-1);
+    }
+
+    @Test
+    public void testNegative1000() throws IOException {
+        testReadWrite(-1000);
+    }
+
+    @Test
+    public void testNegative1000000() throws IOException {
+        testReadWrite(-1000000);
+    }
 
 	private void testReadWrite(int value) throws IOException {
 		VlqInteger.writeInt(out, value);
