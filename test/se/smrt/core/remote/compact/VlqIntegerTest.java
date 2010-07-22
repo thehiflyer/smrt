@@ -78,14 +78,24 @@ public class VlqIntegerTest {
         testReadWrite(-1000000);
     }
 
+    @Test
+    public void testRange() throws IOException {
+        for (int i = -10000; i <= 10000; i++) {
+            out.reset();
+            testReadWrite(i);
+        }
+    }
+
 	private void testReadWrite(int value) throws IOException {
 		VlqInteger.writeInt(out, value);
 		byte[] data = out.toByteArray();
+		/*
 		System.out.print("[");
 		for (byte b : data) {
 			System.out.print(String.format("%x, ", b));
 		}
 		System.out.print("]");
+		*/
 		in = new ByteArrayInputStream(data);
 		assertEquals(value, VlqInteger.readInt(in));
 	}
