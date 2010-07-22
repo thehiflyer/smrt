@@ -13,8 +13,15 @@ import static org.junit.Assert.assertEquals;
 
 public abstract class CodecTest {
 
+	private static final double EPSILON = 1e-20;
+
 	private static final int[] intList = new int[]{
 			  0, -1, 2 ^ 31, -2 ^ 31, 1234, -1234
+	};
+
+
+	private static final float[] floatList = new float[]{
+			  0.0f, -1.0f, 0.23152521f, 1.15215e14f, -0.1532153242342341f, 1.236263213262e35f
 	};
 	private DefaultCodecImpl codec;
 	private static PipedOutputStream out;
@@ -42,6 +49,16 @@ public abstract class CodecTest {
 		for (int i : intList) {
 			codec.writeInt(out, i);
 			assertEquals(i, codec.readInt(in));
+		}
+	}
+
+	@Test
+	public void testCodecFloat() throws IOException {
+		//System.out.println(String.format("%02x", 0));
+
+		for (float f : floatList) {
+			codec.writeFloat(out, f);
+			assertEquals(f, codec.readFloat(in), EPSILON);
 		}
 	}
 
