@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
@@ -79,6 +80,37 @@ public abstract class CodecTest {
 	public void testCodecStringUTF() throws IOException {
 		codec.writeStringAsUTF8(out, "Hello world ÅÄÖ αβψ");
 		assertEquals("Hello world ÅÄÖ αβψ", codec.readStringAsUTF8(in));
+	}
+
+	@Test
+	public void testLong1() throws IOException {
+		long testValue = 0xB4D69DBB64D1A09FL;
+		codec.writeLong(out, testValue);
+		long value = codec.readLong(in);
+		assertEquals(testValue, value);
+	}
+
+	@Test
+	public void testLong2() throws IOException {
+		long testValue = 5415968073690537825L;
+		codec.writeLong(out, testValue);
+		long value = codec.readLong(in);
+		assertEquals(testValue, value);
+	}
+
+	@Test
+	public void testUUID() throws IOException {
+		UUID uuid = UUID.fromString("686e1b60-7944-4fed-b4d6-9dbb64d1a09f");
+
+		long leastSignificantBits = uuid.getLeastSignificantBits();
+		long mostSignificantBits = uuid.getMostSignificantBits();
+		codec.writeLong(out, leastSignificantBits);
+		codec.writeLong(out, mostSignificantBits);
+
+		long lsb = codec.readLong(in);
+		long msb = codec.readLong(in);
+		UUID uuid2 = new UUID(msb, lsb);
+		assertEquals(uuid, uuid2);
 	}
 
 	@AfterClass
