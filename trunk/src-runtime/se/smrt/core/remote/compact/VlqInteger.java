@@ -9,20 +9,20 @@ import java.io.OutputStream;
 public class VlqInteger {
 	private static final long LOWER_7BITS_MASK = 0x7FL;
 	private static final long LOWER_6BITS_MASK = 0x3FL;
-	private static final long MASK_BIT8 = 0x80L;
-	private static final long MASK_BIT7 = 0x40L;
+	private static final long CONTINUATION_BIT = 0x80L;
+	private static final long SIGN_BIT = 0x40L;
 
 	public static void writeLong(OutputStream out, long value) throws IOException {
         boolean negative = value < 0;
         value = Math.abs(value);
 
         if (value <= LOWER_6BITS_MASK) {
-            out.write((int) (value | (negative ? MASK_BIT7 : 0L)));
+            out.write((int) (value | (negative ? SIGN_BIT : 0L)));
         } else {
-            out.write((int) ((value & LOWER_6BITS_MASK) | (negative ? MASK_BIT7 : 0) | MASK_BIT8));
+            out.write((int) ((value & LOWER_6BITS_MASK) | (negative ? SIGN_BIT : 0) | CONTINUATION_BIT));
             value >>= 6;
             while (value > LOWER_7BITS_MASK) {
-                out.write((int) ((value & LOWER_7BITS_MASK) | MASK_BIT8));
+                out.write((int) ((value & LOWER_7BITS_MASK) | CONTINUATION_BIT));
                 value >>= 7;
             }
             out.write((int) value);
@@ -31,22 +31,22 @@ public class VlqInteger {
 
 	public static long readLong(InputStream in) throws IOException {
         int b = readFromStream(in);
-        boolean negative = (b & MASK_BIT7) != 0;
+        boolean negative = (b & SIGN_BIT) != 0;
         long value = b & LOWER_6BITS_MASK;
         int shift = 0;
-        if ((b & MASK_BIT8) != 0) {
+        if ((b & CONTINUATION_BIT) != 0) {
             shift += 6;
             b = readFromStream(in);
         } else {
             return negative ? -value : value;
         }
 
-        while ((b & MASK_BIT8) != 0) {
+        while ((b & CONTINUATION_BIT) != 0) {
             value |= (b & LOWER_7BITS_MASK) << shift;
             shift += 7;
             b = readFromStream(in);
         }
-        value |= b << shift;
+		value |= (long)b << shift;
 
         return negative ? -value : value;
 	}
