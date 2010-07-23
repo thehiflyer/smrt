@@ -275,22 +275,22 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 
 	@Override
 	public void writeFloat(OutputStream out, float v) throws IOException {
-		writeInt(out, Float.floatToIntBits(v));
+		writeIntNormal(out, Float.floatToIntBits(v));
 	}
 
 	@Override
 	public float readFloat(InputStream in) throws IOException {
-		return Float.intBitsToFloat(readInt(in));
+		return Float.intBitsToFloat(readIntNormal(in));
 	}
 
 	@Override
 	public void writeDouble(OutputStream out, double v) throws IOException {
-		writeLong(out, Double.doubleToLongBits(v));
+		writeLongNormal(out, Double.doubleToLongBits(v));
 	}
 
 	@Override
 	public double readDouble(InputStream in) throws IOException {
-		return Double.longBitsToDouble(readLong(in));
+		return Double.longBitsToDouble(readLongNormal(in));
 	}
 
 	@Override
