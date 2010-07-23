@@ -2,6 +2,7 @@ package se.smrt.core.remote.compact;
 
 import org.junit.Before;
 import org.junit.Test;
+import se.smrt.core.remote.VlqInteger;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -87,7 +88,7 @@ public class VlqIntegerTest {
     }
 
 	private void testReadWrite(int value) throws IOException {
-		VlqInteger.writeLong(out, value);
+		VlqInteger.write(out, value);
 		byte[] data = out.toByteArray();
 		/*
 		System.out.print("[");
@@ -97,7 +98,7 @@ public class VlqIntegerTest {
 		System.out.print("]");
 		*/
 		in = new ByteArrayInputStream(data);
-		assertEquals(value, VlqInteger.readLong(in));
+		assertEquals(value, VlqInteger.read(in));
 	}
 
 }

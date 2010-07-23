@@ -1,4 +1,4 @@
-package se.smrt.core.remote.compact;
+package se.smrt.core.remote;
 
 
 import java.io.EOFException;
@@ -12,7 +12,7 @@ public class VlqInteger {
 	private static final long CONTINUATION_BIT = 0x80L;
 	private static final long SIGN_BIT = 0x40L;
 
-	public static void writeLong(OutputStream out, long value) throws IOException {
+	public static void write(OutputStream out, long value) throws IOException {
         boolean negative = value < 0;
         value = Math.abs(value);
 
@@ -29,7 +29,7 @@ public class VlqInteger {
         }
     }
 
-	public static long readLong(InputStream in) throws IOException {
+	public static long read(InputStream in) throws IOException {
         int b = readFromStream(in);
         boolean negative = (b & SIGN_BIT) != 0;
         long value = b & LOWER_6BITS_MASK;

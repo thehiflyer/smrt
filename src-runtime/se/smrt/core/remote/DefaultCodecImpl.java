@@ -9,6 +9,11 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 	}
 
 	@Override
+	public void writeShort(OutputStream output, short value) throws IOException {
+		writeShortVlq(output, value);
+	}
+
+	@Override
 	public byte readByte(InputStream in) throws IOException {
 		return (byte) in.read();
 	}
@@ -19,13 +24,28 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 	}
 
 	@Override
-	public void writeShort(OutputStream out, short v) throws IOException {
+	public short readShort(InputStream input) throws IOException {
+		return readShortVlq(input);
+	}
+
+	@Override
+	public void writeShortNormal(OutputStream out, short v) throws IOException {
 		out.write((v >>> 8) & 0xFF);
 		out.write((v >>> 0) & 0xFF);
 	}
 
 	@Override
-	public short readShort(InputStream in) throws IOException {
+	public void writeShortVlq(OutputStream output, short value) throws IOException {
+		VlqInteger.write(output, value);
+	}
+
+	@Override
+	public void writeInt(OutputStream output, int value) throws IOException {
+		writeIntVlq(output, value);
+	}
+
+	@Override
+	public short readShortNormal(InputStream in) throws IOException {
 		int ch1 = in.read();
 		int ch2 = in.read();
 		if ((ch1 | ch2) < 0) {
@@ -35,12 +55,22 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 	}
 
 	@Override
+	public short readShortVlq(InputStream input) throws IOException {
+		return (short) VlqInteger.read(input);
+	}
+
+	@Override
 	public int readUnsignedShort(InputStream in) throws IOException {
 		return (1 << 16 + readShort(in)) & 0xFFFF;
 	}
-	
+
 	@Override
-	public void writeInt(OutputStream out, int v) throws IOException {
+	public int readInt(InputStream input) throws IOException {
+		return readIntVlq(input);
+	}
+
+	@Override
+	public void writeIntNormal(OutputStream out, int v) throws IOException {
 		out.write((v >>> 24) & 0xFF);
 		out.write((v >>> 16) & 0xFF);
 		out.write((v >>> 8) & 0xFF);
@@ -48,7 +78,17 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 	}
 
 	@Override
-	public int readInt(InputStream in) throws IOException {
+	public void writeIntVlq(OutputStream output, int value) throws IOException {
+		VlqInteger.write(output, value);
+	}
+
+	@Override
+	public void writeLong(OutputStream output, long value) throws IOException {
+		writeLongVlq(output, value);
+	}
+
+	@Override
+	public int readIntNormal(InputStream in) throws IOException {
 		int ch1 = in.read();
 		int ch2 = in.read();
 		int ch3 = in.read();
@@ -60,7 +100,17 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 	}
 
 	@Override
-	public void writeLong(OutputStream out, long v) throws IOException {
+	public int readIntVlq(InputStream input) throws IOException {
+		return (int) VlqInteger.read(input);
+	}
+
+	@Override
+	public long readLong(InputStream input) throws IOException {
+		return readLongVlq(input);
+	}
+
+	@Override
+	public void writeLongNormal(OutputStream out, long v) throws IOException {
 		out.write((int) (v >>> 56));
 		out.write((int) (v >>> 48));
 		out.write((int) (v >>> 40));
@@ -72,7 +122,12 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 	}
 
 	@Override
-	public long readLong(InputStream in) throws IOException {
+	public void writeLongVlq(OutputStream output, long value) throws IOException {
+		VlqInteger.write(output, value);
+	}
+
+	@Override
+	public long readLongNormal(InputStream in) throws IOException {
 		return (((long) in.read() << 56) +
 				((long) (in.read() & 255) << 48) +
 				((long) (in.read() & 255) << 40) +
@@ -84,15 +139,20 @@ public class DefaultCodecImpl implements DefaultReadCodec, DefaultWriteCodec {
 	}
 
 	@Override
+	public long readLongVlq(InputStream input) throws IOException {
+		return VlqInteger.read(input);
+	}
+
+	@Override
 	public void writeString(OutputStream out, String v) throws IOException {
 		// Default implementation, feel free to change in sub class
-		writeStringAsUTF16(out, v);
+		writeStringAsUTF8(out, v);
 	}
 
 	@Override
 	public String readString(InputStream in) throws IOException {
 		// Default implementation, feel free to change in sub class
-		return readStringAsUTF16(in);
+		return readStringAsUTF8(in);
 	}
 
 	@Override

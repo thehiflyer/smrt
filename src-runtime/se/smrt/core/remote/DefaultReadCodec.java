@@ -8,11 +8,24 @@ public interface DefaultReadCodec {
 	int readUnsignedByte(InputStream input) throws IOException;
 
 	short readShort(InputStream input) throws IOException;
+
+	short readShortNormal(InputStream input) throws IOException;
+
+	short readShortVlq(InputStream input) throws IOException;
+
 	int readUnsignedShort(InputStream input) throws IOException;
 
 	int readInt(InputStream input) throws IOException;
 
+	int readIntNormal(InputStream input) throws IOException;
+
+	int readIntVlq(InputStream input) throws IOException;
+
 	long readLong(InputStream input) throws IOException;
+
+	long readLongNormal(InputStream input) throws IOException;
+	
+	long readLongVlq(InputStream input) throws IOException;
 
 	boolean readBoolean(InputStream input) throws IOException;
 
