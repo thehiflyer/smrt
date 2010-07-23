@@ -8,9 +8,21 @@ public interface DefaultWriteCodec {
 
 	void writeShort(OutputStream output, short value) throws IOException;
 
+	void writeShortNormal(OutputStream output, short value) throws IOException;
+
+	void writeShortVlq(OutputStream output, short value) throws IOException;
+
 	void writeInt(OutputStream output, int value) throws IOException;
 
+	void writeIntNormal(OutputStream output, int value) throws IOException;
+
+	void writeIntVlq(OutputStream output, int value) throws IOException;
+
 	void writeLong(OutputStream output, long value) throws IOException;
+
+	void writeLongNormal(OutputStream output, long value) throws IOException;
+
+	void writeLongVlq(OutputStream output, long value) throws IOException;
 
 	void writeBoolean(OutputStream output, boolean value) throws IOException;
 
@@ -27,6 +39,4 @@ public interface DefaultWriteCodec {
 	void writeStringAsUTF8(OutputStream output, String value) throws IOException;
 
 	void writeStringAsUTF16(OutputStream output, String value) throws IOException;
-
-
 }
