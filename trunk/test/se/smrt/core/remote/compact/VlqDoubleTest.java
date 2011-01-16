@@ -2,6 +2,7 @@ package se.smrt.core.remote.compact;
 
 import org.junit.Before;
 import org.junit.Test;
+import se.smrt.core.remote.VlqDouble;
 import se.smrt.core.remote.VlqInteger;
 
 import java.io.ByteArrayInputStream;
@@ -10,7 +11,10 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
-public class VlqIntegerTest {
+public class VlqDoubleTest {
+    static int totalLen = 0;
+    static int totalCompressed = 0;
+
 	private ByteArrayInputStream in;
 	private ByteArrayOutputStream out;
 
@@ -80,23 +84,37 @@ public class VlqIntegerTest {
     }
 
     @Test
-    public void testRange() throws IOException {
-        for (int i = -10000; i <= 10000; i++) {
-            out.reset();
-            testReadWrite(i);
-        }
+    public void testSmall() throws IOException {
+        testReadWrite(0.125 / 1024d / 1024d / 1024d / 1024d / 1024d / 1024d);
     }
 
     @Test
-    public void testRange2() throws IOException {
-        for (long i = 2 << 40; i > 2 << 30; i = (i * 7) + 3) {
-            out.reset();
+    public void testBig() throws IOException {
+        testReadWrite(0.125 * 1024d * 1024d * 1024d * 1024d * 1024d * 1024d);
+    }
+
+    @Test
+    public void testConstructed() throws IOException {
+        double v = Double.longBitsToDouble(0x0f0ff00000000000L);
+        testReadWrite(v);
+    }
+
+    @Test
+    public void testBadValues() throws IOException {
+        testReadWrite(Double.NaN);
+        testReadWrite(Double.POSITIVE_INFINITY);
+        testReadWrite(Double.NEGATIVE_INFINITY);
+    }
+
+    @Test
+    public void testRange() throws IOException {
+        for (int i = -10000; i <= 10000; i++) {
             testReadWrite(i);
         }
     }
 
-	private void testReadWrite(long value) throws IOException {
-		VlqInteger.write(out, value);
+	private void testReadWrite(double value) throws IOException {
+		VlqDouble.write(out, value);
 		byte[] data = out.toByteArray();
 		/*
 		System.out.print("[");
@@ -106,7 +124,15 @@ public class VlqIntegerTest {
 		System.out.print("]");
 		*/
 		in = new ByteArrayInputStream(data);
-		assertEquals(value, VlqInteger.read(in));
+		assertEquals(value, VlqDouble.read(in), 1e-10);
+
+        // Useful for compression measurements
+        totalCompressed += data.length;
+        totalLen += 8;
+        //System.out.println(totalLen + " -> " + totalCompressed + ": " + ((double) totalCompressed / totalLen));
+
+        out.reset();
+
 	}
 
 }
