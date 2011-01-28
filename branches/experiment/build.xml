@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Smrt" basedir="." default="all">
+
+	<dirname property="baseDir" file="${ant.file}"/>
+	
+	<path id="dependencies">
+		<fileset dir="lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+
+	<path id="dependencies.runtime">
+		<pathelement path="${baseDir}/build/stub"/>
+		<path refid="dependencies"/>
+	</path>
+	
+	<path id="dependencies.generator">
+		<pathelement path="${baseDir}/build/runtime"/>
+		<path refid="dependencies"/>
+	</path>
+	
+	<path id="dependencies.domain">
+		<pathelement path="${baseDir}/build/runtime" />
+		<path refid="dependencies"/>
+	</path>
+	
+	<target name="all" depends="compile-domain, package" />
+	
+	<target name="clean" description="Removes old build files">
+		<delete dir="build" failonerror="false"/>
+	</target>
+	
+	<target name="test" depends="compile-domain">
+	</target>
+
+	<target name="package" depends="compile-runtime, compile-generator">
+		<mkdir dir="${baseDir}/build/smrt-release" />
+		<mkdir dir="${baseDir}/build/smrt-release/lib" />
+		
+		<jar destfile="${baseDir}/build/smrt-release/lib/smrt-generator.jar">
+			<fileset dir="${baseDir}/build/generator"/>
+		</jar>
+		<jar destfile="${baseDir}/build/smrt-release/lib/smrt-runtime.jar">
+			<fileset dir="${baseDir}/build/runtime"/>
+		</jar>
+		<jar destfile="${baseDir}/build/smrt-release/lib/smrt-stubs.jar">
+			<fileset dir="${baseDir}/build/stub"/>
+		</jar>
+		<copy toDir="${baseDir}/build/smrt-release" file="${baseDir}/macros.xml" />
+		<mkdir dir="${baseDir}/build/smrt-release/src-templates" />
+		<copy toDir="${baseDir}/build/smrt-release/src-templates">
+			<fileset dir="${baseDir}/src-templates">
+				<exclude name="**/.svn" />
+			</fileset>
+		</copy>
+		<copy toDir="${baseDir}/build/smrt-release/lib">
+			<fileset dir="${baseDir}/lib">
+				<exclude name="**/.svn" />
+			</fileset>
+		</copy>
+        <zip destfile="${baseDir}/build/smrt-release.zip" >
+            <fileset dir="${baseDir}/build">
+                <include name="smrt-release/**" />
+            </fileset>
+        </zip>
+	</target>
+	
+	<target name="compile-runtime" depends="compile-stubs">
+		<mkdir dir="${baseDir}/build/runtime"/>
+		<javac
+			destdir="${baseDir}/build/runtime"
+			debug="true"
+			target="1.6"
+			source="1.6"
+			classpathref="dependencies.runtime"
+			includeAntRuntime="no"
+			>
+			<classpath path="${baseDir}/build/stub" />
+			<src path="src-runtime">
+			</src>
+		</javac>
+	</target>
+
+	<target name="compile-generator" depends="compile-runtime">
+		<mkdir dir="build/generator"/>
+		<javac
+			destdir="build/generator"
+			debug="true"
+			target="1.6"
+			source="1.6"
+			classpathref="dependencies.generator"
+			includeAntRuntime="no"
+			>
+			<src path="src-generator">
+			</src>
+		</javac>
+	</target>
+
+	<target name="compile-stubs">
+		<mkdir dir="build/stub"/>
+		<javac
+			destdir="build/stub"
+			debug="true"
+			target="1.6"
+			source="1.6"
+			classpathref="dependencies.generator"
+			includeAntRuntime="no"
+			>
+			<src path="src-stub">
+			</src>
+		</javac>
+	</target>
+
+	<dirname property="smrtDir" file="${ant.file}"/>
+	<import file="macros.xml" />
+	
+	<target name="compile-domain" depends="compile-generator, compile-stubs">
+		
+		<smrt-generate
+			output.compiled.dir="${baseDir}/build/domain/classes"
+			output.source.dir="${baseDir}/build/domain/source"
+			src.dir="${baseDir}/src-example"
+			classpathref="dependencies.domain"
+			template.dir="${baseDir}/src-templates">
+
+			<javac-options>
+				<classpath path="${baseDir}/build/generator" />
+			</javac-options>		
+		</smrt-generate>
+	</target>
+
+</project>
+
+
